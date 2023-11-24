@@ -1,4 +1,4 @@
-package com.gabi.venda;
+package com.vendinha;
 
 import android.os.Build;
 import android.os.Bundle;

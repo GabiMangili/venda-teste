@@ -1,4 +1,4 @@
-package com.gabi.venda;
+package com.vendinha;
 
 import android.app.Application;
 import android.content.res.Configuration;
