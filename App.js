@@ -1,9 +1,8 @@
-import { StatusBar } from 'expo-status-bar';
 import * as Font from "expo-font";
 import { StyleSheet, Text, View } from 'react-native';
-import HomeScreen from './src/components/screens/home_screen';
 import { useState } from 'react';
 import AppLoading from 'expo-app-loading';
+import Routes from './src/navigation';
 
 const getFonts = () =>
    Font.loadAsync({
@@ -18,7 +17,7 @@ export default function App() {
 
   if(fontsLoaded){
     return (
-    <HomeScreen/>
+    <Routes/>
   );
   } else {
     return (

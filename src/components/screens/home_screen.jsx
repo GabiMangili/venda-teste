@@ -26,7 +26,7 @@ const data = [
 const renderItem = ({ item, index }) => (
   <View>
     <View style={{height: index == 0 ? 12 : 0}}/>
-    <DebtItem item={item} isFirst={index == 0 ? true : false}/>
+    <DebtItem item={item}/>
     <View style={{height: index == data.length - 1 ? 12 : 0}}/>
   </View>
 );
