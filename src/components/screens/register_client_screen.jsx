@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import FloatingButton from '../atoms/floating_button'
 import CancelButton from '../atoms/cancel_button'
 import SaveButton from '../atoms/save_button'
+import FormClientData from '../templates/form_client_data';
 
 export default function RegisterClientScreen () {
   const navigation = useNavigation();
@@ -17,51 +18,24 @@ export default function RegisterClientScreen () {
   const [birthDate, setBirthDate] = useState(null);
   const [errorBirthDate, setErrorBirthDate] = useState(null);
 
-  var clientName;
-  var clientEmail;
+  const [clientName, setClientName] = useState('');
+  const [clientEmail, setClientEmail] = useState('');
+
+  const handleFormChange = (formData) => {
+    console.log('FormData::: '); 
+    console.log(formData);
+    setCpf(formData.cpf)
+    setBirthDate(formData.birthDate)
+    setClientName(formData.clientName)
+    setClientEmail(formData.clientEmail)
+
+    
+  };
   
   return (
     <View style={styles.screen}>
 
-      <View>
-        <Text style={styles.label}>Nome</Text>
-        <TextInput value={clientName} style={styles.input}/>
-      </View>
-
-      <View style={styles.rowForm}>
-        <View>
-          <Text style={styles.label}>CPF</Text>
-          <TextInputMask
-            value={cpf}
-            type={'cpf'}
-            style={styles.inputHalfScreen}
-            keyboardType='numeric'
-            onChangeText={value => {
-              setCpf(value)
-              setErrorCpf(null)
-            }}
-          />
-        </View>
-        <View>
-          <Text style={styles.label}>Nascimento</Text>
-          <TextInputMask
-            value={birthDate}
-            style={styles.inputHalfScreen}
-            keyboardType='numeric'
-            type={'datetime'}
-            options={{format: 'DD/MM/YYYY'}}
-            onChangeText={value => {
-              setBirthDate(value)
-              setErrorBirthDate(null)
-            }}
-          />
-        </View>
-      </View>
-
-      <View>
-        <Text style={styles.label}>E-mail</Text>
-        <TextInput value={clientEmail} style={styles.input} keyboardType='email-address'/>
-      </View>
+      <FormClientData onFormChange={handleFormChange}/>
 
       <View style={styles.debitContainer}>
         <Text style={styles.title}>Dívidas</Text>

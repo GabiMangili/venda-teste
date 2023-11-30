@@ -40,6 +40,19 @@ export default function StackRoutes() {
           options={({ navigation }) => ({
             ...customHeaderStyles(navigation),
             headerTitle: 'Clientes',
+            headerRight: () => (
+              <TouchableOpacity
+                style={{ marginRight: 15 }}  // Ajuste o espaçamento conforme necessário
+                onPress={() => {
+                  // Adicione a lógica para a ação de exclusão aqui
+                }}
+              >
+                <Image
+                  source={require('../../assets/icons/delete.png')}
+                  style={{ width: 25, height: 25, tintColor: '#CE2929' }}
+                />
+              </TouchableOpacity>
+            ),
           })}
         />
     </Stack.Navigator>
@@ -63,7 +76,7 @@ const styles = StyleSheet.create({
       </TouchableOpacity>
       
     )
-  }
+  },
 })
 
 const customHeaderStyles = (navigation) => {

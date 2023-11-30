@@ -1,6 +1,6 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import DebtItem from '../organisms/debt_item'
+import DebtsResumeItem from '../organisms/debts_resume_item'
 
 const data = [
   {
@@ -26,7 +26,7 @@ const data = [
 const renderItem = ({ item, index }) => (
   <View>
     <View style={{height: index == 0 ? 12 : 0}}/>
-    <DebtItem item={item}/>
+    <DebtsResumeItem item={item}/>
     <View style={{height: index == data.length - 1 ? 12 : 0}}/>
   </View>
 );
