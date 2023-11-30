@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const DebtItem = ({item}) => {
+const DebtsResumeItem = ({item}) => {
 
   return (
     <View style={[styles.container, styles.shadow]}>
@@ -18,7 +18,7 @@ const DebtItem = ({item}) => {
   )
 }
 
-export default DebtItem
+export default DebtsResumeItem
 
 const styles = StyleSheet.create({
     container: {

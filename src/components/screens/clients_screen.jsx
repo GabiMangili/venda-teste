@@ -5,34 +5,38 @@ import { useNavigation } from '@react-navigation/native';
 import ClientCardItem from '../organisms/client_card_item';
 import FloatingButton from '../atoms/floating_button';
 
-const clients = [
+const clients = [ 
   {
     id: '1',
     name: 'Maria Helena de Rodrigues',
     cpf: '56640484846',
     email:'maria.helena@gmail.com',
-    totalDebit: '10.000'
+    totalDebit: '10.000',
+    birthDate: '22-10-2002'
   },
   {
     id: '2',
     name: 'Silvânia Valladares Heizelman',
     cpf: '86673339136',
     email:'silvania@gmail.com',
-    totalDebit: '100'
+    totalDebit: '100',
+    birthDate: '22-10-2002'
   },
   {
     id: '3',
     name: 'George Darmont Pires',
     cpf: '313.414.462-04',
     email:'marco.pires@outlook.com.br',
-    totalDebit: '80.000'
+    totalDebit: '80.000',
+    birthDate: '22-10-2002'
   },
   {
     id: '4',
     name: 'Marco Pires Silvino',
     cpf: '313.414.462-04',
     email:'marco.pires@outlook.com.br',
-    totalDebit: '80.000'
+    totalDebit: '80.000',
+    birthDate: '22-10-2002'
   },
 ];
 
@@ -42,9 +46,9 @@ const clients = [
   const navigation = useNavigation();
 
   const renderItem = ({ item, index }) => (
-      <View>
+    <View>
       <View style={{height: index == 0 ? 5 : 0}}/>
-      <ClientCardItem item={item} navigation={navigation}/>
+      <ClientCardItem item={item}/>
       <View style={{height: index == clients.length - 1 ? 60 : 0}}/>
     </View>
     

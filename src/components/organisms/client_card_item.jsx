@@ -1,14 +1,17 @@
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native'
 import React from 'react'
+import { useNavigation } from '@react-navigation/native';
+
 import Divider from '../atoms/divider'
 
-const ClientCardItem = ({item, navigation}) => {
-    console.log(item)
-
-    var client = item;
+const ClientCardItem = ({item}) => {
+    const navigation = useNavigation()
+    
+    var client = item; 
+    console.log(client)
 
   return ( 
-    <TouchableOpacity onPress={() => navigation.navigate('PaymentScreen')} activeOpacity={0.85}>
+    <TouchableOpacity onPress={() => navigation.navigate('PaymentScreen', {client: client})} activeOpacity={0.85}>
     <View style={[styles.container]}>
 
         <Text style={styles.name}>{client.name}</Text>  
@@ -53,7 +56,6 @@ const styles = StyleSheet.create({
     },
     row: {
         flexDirection: 'row',
-        //justifyContent:'space-between'
     },
     rowSpaceBetween: {
         flexDirection: 'row',
