@@ -1,13 +1,14 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import React from 'react'
 
-const SaveButton = ({onPress}, isAble) => {
+const SaveButton = ({onPress, isAble}) => {
+    var isAbleButton = isAble == null || isAble == false ? false : true
 
     const styles = StyleSheet.create({
         button: {
             padding: 10,
             margin: 8,
-            backgroundColor: isAble ? '#62A856' : 'gray',
+            backgroundColor: isAbleButton ? '#62A856' : 'gray',
             borderRadius: 8,
             justifyContent: 'center',
             alignItems: 'center'

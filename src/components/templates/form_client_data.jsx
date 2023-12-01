@@ -1,16 +1,19 @@
 import { StyleSheet, Text, View, TextInput, Dimensions, } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { TextInputMask } from 'react-native-masked-text'
+import FormLabelMandatory from '../molecules/form_label_mandatory'
 
-const FormClientData = ({onFormChange}) => {
-    const [cpf, setCpf] = useState('');
+const FormClientData = ({onFormChange, client}) => {
+  var isEdit = client != null
+
+    const [cpf, setCpf] = useState(isEdit ? client.cpf : '');
     const [errorCpf, setErrorCpf] = useState('');
 
-    const [birthDate, setBirthDate] = useState('');
+    const [birthDate, setBirthDate] = useState(isEdit ? client.birthDate : '');
     const [errorBirthDate, setErrorBirthDate] = useState('');
 
-    const [clientName, setClientName] = useState('');
-    const [clientEmail, setClientEmail] = useState('');
+    const [name, setName] = useState(isEdit ? client.name : '');
+    const [email, setEmail] = useState(isEdit ? client.email : '');
 
 
     const handleFormChange = () => {
@@ -18,24 +21,24 @@ const FormClientData = ({onFormChange}) => {
         onFormChange({
               cpf: cpf,
               birthDate: birthDate,
-              clientName: clientName,
-              clientEmail: clientEmail
+              name: name,
+              email: email
         });
       };
 
       useEffect(() => {
         handleFormChange()
-      }, [clientName, clientEmail, cpf, birthDate])
+      }, [name, email, cpf, birthDate])
 
   return (
     <View>
       <View>
-        <Text style={styles.label}>Nome</Text>
+      <FormLabelMandatory text='Nome'/>
         <TextInput
-            value={clientName}
+            value={name}
             style={styles.input}
             onChangeText={(value) => {
-                setClientName(value)
+                setName(value)
             }
             }
         />
@@ -43,7 +46,7 @@ const FormClientData = ({onFormChange}) => {
 
       <View style={styles.rowForm}>
         <View>
-          <Text style={styles.label}>CPF</Text>
+        <FormLabelMandatory text='CPF'/>
           <TextInputMask
             value={cpf}
             type={'cpf'}
@@ -56,7 +59,7 @@ const FormClientData = ({onFormChange}) => {
           />
         </View>
         <View>
-          <Text style={styles.label}>Nascimento</Text>
+        <FormLabelMandatory text='Nascimento'/>
           <TextInputMask
             value={birthDate}
             style={styles.inputHalfScreen}
@@ -72,13 +75,13 @@ const FormClientData = ({onFormChange}) => {
       </View>
 
       <View>
-        <Text style={styles.label}>E-mail</Text>
+      <FormLabelMandatory text='E-mail'/>
         <TextInput
-            value={clientEmail}
+            value={email}
             style={styles.input}
             keyboardType='email-address'
             onChangeText={value => {
-                setClientEmail(value)
+                setEmail(value)
               }}
         />
       </View>

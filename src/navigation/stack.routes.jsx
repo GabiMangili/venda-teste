@@ -8,6 +8,7 @@ import ClientsScreen from '../components/screens/clients_screen';
 import RegisterClientScreen from '../components/screens/register_client_screen';
 import NewDebitScreen from '../components/screens/new_debit_screen';
 import PaymentScreen from '../components/screens/payment_screen';
+import EditClientScreen from '../components/screens/edit_clients_screen';
 
 const Stack = createNativeStackNavigator();
 
@@ -53,6 +54,15 @@ export default function StackRoutes() {
                 />
               </TouchableOpacity>
             ),
+          })}
+        />
+
+        <Stack.Screen 
+          name='EditClientScreen' 
+          component={EditClientScreen} 
+          options={({ navigation }) => ({
+            ...customHeaderStyles(navigation),
+            headerTitle: 'Editar cliente',
           })}
         />
     </Stack.Navigator>

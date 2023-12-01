@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View, Image, TextInput, Dimensions, TouchableOpacity    } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Appbar } from 'react-native-paper'
 import { TextInputMask } from 'react-native-masked-text'
 import { useNavigation } from '@react-navigation/native';
 
+import { removeSpaces, transformDate, validateCPFNumber, validateEmail, validateInput, validateInputDate, validateRequired } from '../../utils';
 import FloatingButton from '../atoms/floating_button'
 import CancelButton from '../atoms/cancel_button'
 import SaveButton from '../atoms/save_button'
@@ -12,31 +13,58 @@ import FormClientData from '../templates/form_client_data';
 export default function RegisterClientScreen () {
   const navigation = useNavigation();
 
-  const [cpf, setCpf] = useState(null);
-  const [errorCpf, setErrorCpf] = useState(null);
+  const [cpf, setCpf] = useState('');
+  const [errorCpf, setErrorCpf] = useState('');
 
-  const [birthDate, setBirthDate] = useState(null);
-  const [errorBirthDate, setErrorBirthDate] = useState(null);
+  const [birthDate, setBirthDate] = useState('');
+  const [errorBirthDate, setErrorBirthDate] = useState('');
 
-  const [clientName, setClientName] = useState('');
-  const [clientEmail, setClientEmail] = useState('');
+  const [name, setName] = useState('');
+  const [errorName, setErrorName] = useState('');
 
+  const [email, setEmail] = useState('');
+  const [errorEmail, setErrorEmail] = useState('');
+
+  const [haveEmptyInput, setHaveEmptyInput] = useState(true)
+  
+  
   const handleFormChange = (formData) => {
-    console.log('FormData::: '); 
+    console.log('FormData POST: ');
     console.log(formData);
+
     setCpf(formData.cpf)
     setBirthDate(formData.birthDate)
-    setClientName(formData.clientName)
-    setClientEmail(formData.clientEmail)
-
-    
+    setName(formData.name)
+    setEmail(formData.email)
   };
+
+  useEffect(() => {
+    console.log("useEffect")
+    console.log(errorName)
+    console.log(errorEmail)
+    console.log(errorCpf),
+    console.log(errorBirthDate)
+
+    setHaveEmptyInput(!removeSpaces(name) || !removeSpaces(email) || !cpf || !birthDate)
+
+  }, [errorName, errorEmail, errorCpf, errorBirthDate, name, email, cpf, birthDate])
+
+  const validateForm = () => {
+    setErrorName(validateRequired(removeSpaces(name)))
+    setErrorEmail(validateEmail(removeSpaces(email)))
+    setErrorCpf(validateCPFNumber(cpf))
+    setErrorBirthDate(validateInputDate(transformDate(birthDate)))
+  }
+
+  onPressSaveButton = () => {
+    if(!haveEmptyInput){
+      validateForm()
+    }
+  }
   
   return (
     <View style={styles.screen}>
-
       <FormClientData onFormChange={handleFormChange}/>
-
       <View style={styles.debitContainer}>
         <Text style={styles.title}>Dívidas</Text>
         <View style={styles.debits}>
@@ -44,10 +72,9 @@ export default function RegisterClientScreen () {
         </View>
         <View style={styles.rowButtons}>
           <CancelButton onPress={() => console.warn('cancelado')}/>
-          <SaveButton onPress={() => console.warn('salvo')}/>
+          <SaveButton isAble={!haveEmptyInput} onPress={onPressSaveButton}/>
         </View>
       </View>
-
       <FloatingButton spaceBottom={80} onPress={() => navigation.navigate("NewDebitScreen") }/>
     </View>
   )

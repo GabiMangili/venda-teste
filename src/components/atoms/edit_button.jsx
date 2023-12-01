@@ -3,7 +3,10 @@ import React from 'react'
 
 const EditButton = ({onPress}) => {
   return (
-    <TouchableOpacity style={styles.button}>
+    <TouchableOpacity 
+      style={styles.button}
+      onPress={onPress}
+    >
         <Image
           source={require('../../../assets/icons/edit.png')}
           style={{ width: 20, height: 20, marginRight: 5, tintColor: '#62A856' }}
