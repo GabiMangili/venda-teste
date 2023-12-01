@@ -7,33 +7,42 @@ import { useNavigation } from '@react-navigation/native';
 import FloatingButton from '../atoms/floating_button'
 import CancelButton from '../atoms/cancel_button'
 import SaveButton from '../atoms/save_button'
+import FormLabelMandatory from '../molecules/form_label_mandatory';
 
 export default function NewDebitScreen () {
   const navigation = useNavigation();
 
-  const [cpf, setCpf] = useState(null);
-  const [errorCpf, setErrorCpf] = useState(null);
+  const [debitName, setDebitName] = useState('');
+  const [errorDebitName, setErrorDebitName] = useState('');
 
-  const [payedDate, setPayedDate] = useState(null);
-  const [errorPayedDate, setErrorPayedDate] = useState(null);
+  const [payedDate, setPayedDate] = useState('');
+  const [errorPayedDate, setErrorPayedDate] = useState('');
 
-  const [creationDate, setCreationDate] = useState(null);
-  const [errorCreationDate, setErrorCreationDate] = useState(null);
+  const [creationDate, setCreationDate] = useState('');
+  const [errorCreationDate, setErrorCreationDate] = useState('');
 
-  const [price, setPrice] = useState(null);
-  const [errorPrice, setErrorPrice] = useState(null);
+  const [price, setPrice] = useState('');
+  const [errorPrice, setErrorPrice] = useState('');
+
+  const [isPayed, setIsPayed] = useState(false)
   
   return (
     <View style={styles.screen}>
 
       <View>
-        <Text style={styles.label}>Nome da dívida</Text>
-        <TextInput style={styles.input}/>
+        <FormLabelMandatory text='Nome da dívida'/>
+        <TextInput
+          style={styles.input}
+          value={debitName}
+          onChangeText={value => {
+            setDebitName(value)
+          }}
+        />
       </View>
 
       <View style={styles.rowForm}>
       <View>
-          <Text style={styles.label}>Data de criação</Text>
+          <FormLabelMandatory text='Data de criação'/>
           <TextInputMask
             value={creationDate}
             style={styles.inputHalfScreen}
@@ -47,7 +56,7 @@ export default function NewDebitScreen () {
           />
         </View>
         <View>
-          <Text style={styles.label}>Valor</Text>
+          <FormLabelMandatory text='Valor'/>
           <TextInputMask
           type={'money'}
             value={price}
@@ -63,20 +72,36 @@ export default function NewDebitScreen () {
         
       </View>
 
-      <View>
-          <Text style={styles.label}>Data do pagamento</Text>
-          <TextInputMask
-            value={payedDate}
-            style={styles.inputHalfScreen}
-            keyboardType='numeric'
-            type={'datetime'}
-            options={{format: 'DD/MM/YYYY'}}
-            onChangeText={value => {
-              setPayedDate(value)
-              setErrorPayedDate(null)
-            }}
-          />
-        </View>
+        <TouchableOpacity style={styles.row} onPress={()=>setIsPayed(!isPayed)}>
+        { !isPayed 
+          ? <Image
+            source={require('../../../assets/icons/box_uncheck.png')}
+            style={{ width: 20, height: 20, marginRight: 5, tintColor: '#62A856' }}
+          /> 
+          : <Image
+              source={require('../../../assets/icons/box_check.png')}
+              style={{ width: 20, height: 20, marginRight: 5, tintColor: '#62A856' }}
+            />}
+        <Text style={styles.isPayedText}>Dívida já está paga</Text>
+      </TouchableOpacity>
+
+      { isPayed
+        ? <View>
+            <FormLabelMandatory text='Data do pagamento'/>
+            <TextInputMask
+              value={payedDate}
+              style={styles.inputHalfScreen}
+              keyboardType='numeric'
+              type={'datetime'}
+              options={{format: 'DD/MM/YYYY'}}
+              onChangeText={value => {
+                setPayedDate(value)
+              }}
+            />
+          </View>
+        : null
+      }
+
 
       <View style={styles.debitContainer}>
         <View style={styles.rowButtons}>
@@ -112,6 +137,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 5,
     width: ((Dimensions.get('window').width)-80) /2 
+  },
+  row: {
+    flexDirection: 'row',
+    marginTop: 15,
+    paddingBottom: 15
   },
   rowForm: {
     flexDirection: 'row',
