@@ -1,11 +1,13 @@
 import { StyleSheet, Text, View, Dimensions, FlatList, Image } from 'react-native'
 import React from 'react'
+import { useNavigation } from '@react-navigation/native';
 
 import FloatingButton from '../atoms/floating_button'
 import DebitItem from '../organisms/debits_item'
 import EditButton from '../atoms/edit_button'
 
 const PaymentScreen = ({route}) => {
+  const navigation = useNavigation()
   const { client } = route.params
 
   console.log('client:') 
@@ -46,10 +48,10 @@ const debits = [
 
 const renderItem = ({ item, index }) => (
   <View>
-  <View style={{height: index == 0 ? 0 : 0}}/>
-  <DebitItem item={item}/>
-  <View style={{height: index == debits.length - 1 ? 20 : 0}}/>
-</View>
+    <View style={{height: index == 0 ? 0 : 0}}/>
+      <DebitItem item={item}/>
+    <View style={{height: index == debits.length - 1 ? 20 : 0}}/>
+  </View>
 );
 
   return (
@@ -77,7 +79,7 @@ const renderItem = ({ item, index }) => (
             <Text style={styles.label}>E-mail</Text>
             <Text style={styles.dataText}>{client.email}</Text>
           </View>
-          <EditButton/>
+          <EditButton onPress={() => navigation.navigate('EditClientScreen', client)}/>
         </View>
         
       </View>
@@ -93,7 +95,7 @@ const renderItem = ({ item, index }) => (
         />
       </View>
 
-      <FloatingButton spaceBottom={80}/>
+      <FloatingButton spaceBottom={80} onPress={() => navigation.navigate('NewDebitScreen')}/>
     </View>
   )
 }

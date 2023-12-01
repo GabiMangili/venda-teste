@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, TextInput, Dimensions, TouchableOpacity    } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Appbar } from 'react-native-paper'
 import { TextInputMask } from 'react-native-masked-text'
 import { useNavigation } from '@react-navigation/native';
@@ -8,29 +8,49 @@ import FloatingButton from '../atoms/floating_button'
 import CancelButton from '../atoms/cancel_button'
 import SaveButton from '../atoms/save_button'
 import FormClientData from '../templates/form_client_data';
+import { transformDate, validateCPFNumber, validateEmail, validateInput, validateInputDate, validateRequired } from '../../utils';
+import { transform } from 'typescript';
 
 export default function RegisterClientScreen () {
   const navigation = useNavigation();
 
-  const [cpf, setCpf] = useState(null);
-  const [errorCpf, setErrorCpf] = useState(null);
+  const [cpf, setCpf] = useState('');
+  const [errorCpf, setErrorCpf] = useState('');
 
-  const [birthDate, setBirthDate] = useState(null);
-  const [errorBirthDate, setErrorBirthDate] = useState(null);
+  const [birthDate, setBirthDate] = useState('');
+  const [errorBirthDate, setErrorBirthDate] = useState('');
 
-  const [clientName, setClientName] = useState('');
-  const [clientEmail, setClientEmail] = useState('');
+  const [name, setName] = useState('');
+  const [errorName, setErrorName] = useState('');
+
+  const [email, setEmail] = useState('');
+  const [errorEmail, setErrorEmail] = useState('');
 
   const handleFormChange = (formData) => {
-    console.log('FormData::: '); 
+    console.log('FormData POST: '); 
     console.log(formData);
+
     setCpf(formData.cpf)
     setBirthDate(formData.birthDate)
-    setClientName(formData.clientName)
-    setClientEmail(formData.clientEmail)
-
-    
+    setName(formData.name)
+    setEmail(formData.email)
   };
+
+  useEffect(() => {
+    console.log("useEffect")
+    console.log(errorName)
+    console.log(errorEmail)
+    console.log(errorCpf),
+    console.log(errorBirthDate)
+  }, [errorName, errorEmail, errorCpf, errorBirthDate])
+
+  const validateForm = () => {
+    setErrorName(validateRequired(name))
+    setErrorEmail(validateEmail(email))
+    setErrorCpf(validateCPFNumber(cpf))
+    setErrorBirthDate(validateInputDate(transformDate(birthDate)))
+  }
+
   
   return (
     <View style={styles.screen}>
@@ -44,11 +64,11 @@ export default function RegisterClientScreen () {
         </View>
         <View style={styles.rowButtons}>
           <CancelButton onPress={() => console.warn('cancelado')}/>
-          <SaveButton onPress={() => console.warn('salvo')}/>
+          <SaveButton onPress={() => validateForm()}/>
         </View>
       </View>
 
-      <FloatingButton spaceBottom={80} onPress={() => navigation.navigate("NewDebitScreen") }/>
+      
     </View>
   )
 }
@@ -59,37 +79,9 @@ const styles = StyleSheet.create({
     height: Dimensions.get('screen').height,
     flex: 1
   },
-  input:{
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#cecece',
-    borderRadius: 8,
-    marginTop: 2,
-    marginBottom: 10,
-    padding: 5,
-  },
-  inputHalfScreen: {
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#cecece',
-    borderRadius: 8,
-    marginTop: 2,
-    marginBottom: 10,
-    padding: 5,
-    width: ((Dimensions.get('window').width)-80) /2 
-  },
-  rowForm: {
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
   rowButtons: {
     flexDirection: 'row',
     alignSelf: 'center'
-  },
-  label: {
-    fontSize: 14,
-    color: '#62A856',
-    fontFamily: "OpenSans SemiBold"
   },
   title: {
     fontSize: 16,

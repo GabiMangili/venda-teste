@@ -6,8 +6,9 @@ import TabRoutes from './tab_routes'
 import HomeScreen from '../components/screens/home_screen';
 import ClientsScreen from '../components/screens/clients_screen';
 import RegisterClientScreen from '../components/screens/register_client_screen';
-import NewDebitScreen from '../components/screens/new_debit_screen';
+//import NewDebitScreen from '../components/screens/new_debit_screen';
 import PaymentScreen from '../components/screens/payment_screen';
+import EditClientScreen from '../components/screens/edit_client_screen';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,15 +26,7 @@ export default function StackRoutes() {
           })}
         />
 
-        <Stack.Screen 
-          name='NewDebitScreen' 
-          component={NewDebitScreen} 
-          options={({ navigation }) => ({
-            ...customHeaderStyles(navigation),
-            headerTitle: 'Nova Dívida',
-          })}
-        />
-
+        
         <Stack.Screen 
           name='PaymentScreen' 
           component={PaymentScreen} 
@@ -53,6 +46,15 @@ export default function StackRoutes() {
                 />
               </TouchableOpacity>
             ),
+          })}
+        />
+
+        <Stack.Screen 
+          name='EditClientScreen' 
+          component={EditClientScreen} 
+          options={({ navigation }) => ({
+            ...customHeaderStyles(navigation),
+            headerTitle: 'Editar cliente',
           })}
         />
     </Stack.Navigator>
