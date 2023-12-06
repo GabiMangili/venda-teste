@@ -3,6 +3,7 @@ import React from 'react'
 import validator from 'validator';
 import { validate as validateCPF } from 'gerador-validador-cpf';
 import { isDate, parseISO } from 'date-fns';
+import dayjs from 'dayjs';
 
 export function transformDate(inputDate) {
     if(!inputDate){

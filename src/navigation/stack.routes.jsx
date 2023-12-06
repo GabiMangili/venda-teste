@@ -9,10 +9,13 @@ import RegisterClientScreen from '../components/screens/register_client_screen';
 import NewDebitScreen from '../components/screens/new_debit_screen';
 import PaymentScreen from '../components/screens/payment_screen';
 import EditClientScreen from '../components/screens/edit_clients_screen';
+//import SureModal from '../components/organisms/modals/sure_modal';
 
 const Stack = createNativeStackNavigator();
 
 export default function StackRoutes() {
+
+
   return (
     <Stack.Navigator>
         <Stack.Screen name='Home' component={TabRoutes} options={{headerShown: false}}/>
@@ -41,19 +44,6 @@ export default function StackRoutes() {
           options={({ navigation }) => ({
             ...customHeaderStyles(navigation),
             headerTitle: 'Clientes',
-            headerRight: () => (
-              <TouchableOpacity
-                style={{ marginRight: 15 }}  // Ajuste o espaçamento conforme necessário
-                onPress={() => {
-                  // Adicione a lógica para a ação de exclusão aqui
-                }}
-              >
-                <Image
-                  source={require('../../assets/icons/delete.png')}
-                  style={{ width: 25, height: 25, tintColor: '#CE2929' }}
-                />
-              </TouchableOpacity>
-            ),
           })}
         />
 

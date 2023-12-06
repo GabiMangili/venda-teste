@@ -3,32 +3,45 @@ import React, { useEffect, useState } from 'react'
 import { TextInputMask } from 'react-native-masked-text'
 import FormLabelMandatory from '../molecules/form_label_mandatory'
 
-const FormClientData = ({onFormChange, client}) => {
+const FormClientData = ({onFormChange, client, errorFormData}) => {
   var isEdit = client != null
 
-    const [cpf, setCpf] = useState(isEdit ? client.cpf : '');
-    const [errorCpf, setErrorCpf] = useState('');
+  const [cpf, setCpf] = useState(isEdit ? client.cpf : '');
+  const [errorCpf, setErrorCpf] = useState('');
 
-    const [birthDate, setBirthDate] = useState(isEdit ? client.birthDate : '');
-    const [errorBirthDate, setErrorBirthDate] = useState('');
+  const [birthDate, setBirthDate] = useState(isEdit ? client.birthDate : '');
+  const [errorBirthDate, setErrorBirthDate] = useState('');
 
-    const [name, setName] = useState(isEdit ? client.name : '');
-    const [email, setEmail] = useState(isEdit ? client.email : '');
+  const [name, setName] = useState(isEdit ? client.name : '');
+  const [errorName, setErrorName] = useState('');
 
+  const [email, setEmail] = useState(isEdit ? client.email : '');
+  const [errorEmail, setErrorEmail] = useState('');
 
-    const handleFormChange = () => {
-        // Enviar os dados do formulário para a tela principal
-        onFormChange({
-              cpf: cpf,
-              birthDate: birthDate,
-              name: name,
-              email: email
-        });
-      };
+  const handleFormChange = () => {
+    // Enviar os dados do formulário para a tela principal
+    onFormChange({
+          cpf: cpf,
+          birthDate: birthDate,
+          name: name,
+          email: email
+    });
+  };
 
-      useEffect(() => {
-        handleFormChange()
-      }, [name, email, cpf, birthDate])
+  const getErrors = () => {
+    setErrorName(errorFormData.errorName)
+    setErrorCpf(errorFormData.errorCpf)
+    setErrorBirthDate(errorFormData.errorBirthDate)
+    setErrorEmail(errorFormData.errorEmail)
+  }
+
+  useEffect(() => {
+    handleFormChange()
+    getErrors()
+  }, [name, email, cpf, birthDate])
+
+  console.log("errorformdata-------------------")
+  console.log(errorFormData)
 
   return (
     <View>
@@ -36,12 +49,13 @@ const FormClientData = ({onFormChange, client}) => {
       <FormLabelMandatory text='Nome'/>
         <TextInput
             value={name}
-            style={styles.input}
+            style={!errorName ? styles.input : styles.inputError}
             onChangeText={(value) => {
                 setName(value)
             }
             }
         />
+        <Text style={styles.textError}>{errorName}</Text>
       </View>
 
       <View style={styles.rowForm}>
@@ -50,19 +64,20 @@ const FormClientData = ({onFormChange, client}) => {
           <TextInputMask
             value={cpf}
             type={'cpf'}
-            style={styles.inputHalfScreen}
+            style={!errorCpf ? styles.inputHalfScreen : styles.inputHalfScreenError}
             keyboardType='numeric'
             onChangeText={value => {
               setCpf(value)
               setErrorCpf(null)
             }}
           />
+          <Text style={styles.textError}>{errorCpf}</Text>
         </View>
         <View>
-        <FormLabelMandatory text='Nascimento'/>
+          <FormLabelMandatory text='Nascimento'/>
           <TextInputMask
             value={birthDate}
-            style={styles.inputHalfScreen}
+            style={!errorBirthDate ? styles.inputHalfScreen : styles.inputHalfScreenError}
             keyboardType='numeric'
             type={'datetime'}
             options={{format: 'DD/MM/YYYY'}}
@@ -71,6 +86,7 @@ const FormClientData = ({onFormChange, client}) => {
               setErrorBirthDate(null)
             }}
           />
+          <Text style={styles.textError}>{errorBirthDate}</Text>
         </View>
       </View>
 
@@ -78,12 +94,13 @@ const FormClientData = ({onFormChange, client}) => {
       <FormLabelMandatory text='E-mail'/>
         <TextInput
             value={email}
-            style={styles.input}
+            style={!errorEmail ? styles.input : styles.inputError}
             keyboardType='email-address'
             onChangeText={value => {
                 setEmail(value)
               }}
         />
+        <Text style={styles.textError}>{errorEmail}</Text>
       </View>
     </View>
   )
@@ -98,7 +115,15 @@ const styles = StyleSheet.create({
         borderColor: '#cecece',
         borderRadius: 8,
         marginTop: 2,
-        marginBottom: 10,
+        padding: 5,
+        width: ((Dimensions.get('window').width)-80) /2 
+      },
+      inputHalfScreenError: {
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#CE2929',
+        borderRadius: 8,
+        marginTop: 2,
         padding: 5,
         width: ((Dimensions.get('window').width)-80) /2 
       },
@@ -108,7 +133,14 @@ const styles = StyleSheet.create({
         borderColor: '#cecece',
         borderRadius: 8,
         marginTop: 2,
-        marginBottom: 10,
+        padding: 5,
+      },
+      inputError:{
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#CE2929',
+        borderRadius: 8,
+        marginTop: 2,
         padding: 5,
       },
       rowForm: {
@@ -120,4 +152,10 @@ const styles = StyleSheet.create({
         color: '#62A856',
         fontFamily: "OpenSans SemiBold"
       },
+      textError:{
+        fontSize: 10,
+        color: '#CE2929',
+        fontFamily: "OpenSans SemiBold",
+        marginBottom: 5
+      }
 })

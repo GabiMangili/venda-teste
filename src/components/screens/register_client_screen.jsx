@@ -4,7 +4,7 @@ import { Appbar } from 'react-native-paper'
 import { TextInputMask } from 'react-native-masked-text'
 import { useNavigation } from '@react-navigation/native';
 
-import { removeSpaces, transformDate, validateCPFNumber, validateEmail, validateInput, validateInputDate, validateRequired } from '../../utils';
+import { removeSpaces, transformDate, validateCPFNumber, validateEmail, validateInputDate, validateRequired } from '../../utils';
 import FloatingButton from '../atoms/floating_button'
 import CancelButton from '../atoms/cancel_button'
 import SaveButton from '../atoms/save_button'
@@ -27,6 +27,14 @@ export default function RegisterClientScreen () {
 
   const [haveEmptyInput, setHaveEmptyInput] = useState(true)
   
+  var errorFormMessages = {
+    name: errorName,
+    cpf: errorCpf,
+    birthDate: birthDate,
+    email: errorEmail
+  }
+  
+  const [errorFormMessagesData, setErrorFormMessagesData] = useState(errorFormMessages)
   
   const handleFormChange = (formData) => {
     console.log('FormData POST: ');
@@ -39,15 +47,23 @@ export default function RegisterClientScreen () {
   };
 
   useEffect(() => {
-    console.log("useEffect")
-    console.log(errorName)
-    console.log(errorEmail)
-    console.log(errorCpf),
-    console.log(errorBirthDate)
-
-    setHaveEmptyInput(!removeSpaces(name) || !removeSpaces(email) || !cpf || !birthDate)
-
-  }, [errorName, errorEmail, errorCpf, errorBirthDate, name, email, cpf, birthDate])
+    console.log("useEffect register");
+    console.log(errorName);
+    console.log(errorEmail);
+    console.log(errorCpf);
+    console.log(errorBirthDate);
+  
+    setHaveEmptyInput(!removeSpaces(name) || !removeSpaces(email) || !cpf || !birthDate);
+    
+    setErrorFormMessagesData({
+      errorName: errorName,
+      errorCpf: errorCpf,
+      errorBirthDate: errorBirthDate,
+      errorEmail: errorEmail,
+    });
+  
+  }, [errorName, errorEmail, errorCpf, errorBirthDate, name, email, cpf, birthDate]);
+  
 
   const validateForm = () => {
     setErrorName(validateRequired(removeSpaces(name)))
@@ -56,7 +72,7 @@ export default function RegisterClientScreen () {
     setErrorBirthDate(validateInputDate(transformDate(birthDate)))
   }
 
-  onPressSaveButton = () => {
+  const onPressSaveButton = () => {
     if(!haveEmptyInput){
       validateForm()
     }
@@ -64,14 +80,14 @@ export default function RegisterClientScreen () {
   
   return (
     <View style={styles.screen}>
-      <FormClientData onFormChange={handleFormChange}/>
+      <FormClientData onFormChange={handleFormChange} errorFormData={errorFormMessagesData}/>
       <View style={styles.debitContainer}>
         <Text style={styles.title}>Dívidas</Text>
         <View style={styles.debits}>
           <Text style={styles.noDebitsText}>Cliente não possui dívidas.</Text>
         </View>
         <View style={styles.rowButtons}>
-          <CancelButton onPress={() => console.warn('cancelado')}/>
+          <CancelButton onPress={() => navigation.goBack()}/>
           <SaveButton isAble={!haveEmptyInput} onPress={onPressSaveButton}/>
         </View>
       </View>
