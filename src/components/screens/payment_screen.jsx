@@ -1,15 +1,60 @@
-import { StyleSheet, Text, View, Dimensions, FlatList, Image } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Dimensions, FlatList, Image, TouchableOpacity } from 'react-native'
+import React, { useState, useLayoutEffect  } from 'react'
+import { useNavigation } from '@react-navigation/native';
 
 import FloatingButton from '../atoms/floating_button'
 import DebitItem from '../organisms/debits_item'
 import EditButton from '../atoms/edit_button'
+import DeleteModal from '../organisms/modals/deleted_modal';
+import SuccessModal from '../organisms/modals/success_modal';
+import SureModal from '../organisms/modals/sure_modal';
 
 const PaymentScreen = ({route}) => {
+  const navigation = useNavigation()
   const { client } = route.params
 
   console.log('client:') 
   console.log(client)
+
+  const handleDeleteClient = () => {
+    navigation.navigate('StackRoutes', { clientToDelete: client });
+  };
+
+  const [isVisibleSureModal, setVisibleSureModal] = useState(false);
+  const [isVisibleSuccessModal, setSuccessModalVisible] = useState(false);
+
+  const showSureModal = () => {
+    setVisibleSureModal(true);
+  };
+
+  const showSuccessModal = () => {
+    setSuccessModalVisible(true);
+  };
+
+  const closeSureModal = (result) => {
+    setVisibleSureModal(false);
+  };
+
+  const closeSuccessModal = (result) => {
+    setSuccessModalVisible(false);
+  };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          style={{ marginRight: 15 }}
+          onPress={showSureModal}
+        >
+          <Image
+            source={require('../../../assets/icons/delete.png')}
+            style={{ width: 25, height: 25, tintColor: '#CE2929' }}
+          />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
 
 const debits = [
   {
@@ -46,10 +91,10 @@ const debits = [
 
 const renderItem = ({ item, index }) => (
   <View>
-  <View style={{height: index == 0 ? 0 : 0}}/>
-  <DebitItem item={item}/>
-  <View style={{height: index == debits.length - 1 ? 20 : 0}}/>
-</View>
+    <View style={{height: index == 0 ? 0 : 0}}/>
+      <DebitItem item={item}/>
+    <View style={{height: index == debits.length - 1 ? 20 : 0}}/>
+  </View>
 );
 
   return (
@@ -77,7 +122,7 @@ const renderItem = ({ item, index }) => (
             <Text style={styles.label}>E-mail</Text>
             <Text style={styles.dataText}>{client.email}</Text>
           </View>
-          <EditButton/>
+          <EditButton onPress={() => navigation.navigate('EditClientScreen', client)}/>
         </View>
         
       </View>
@@ -93,7 +138,27 @@ const renderItem = ({ item, index }) => (
         />
       </View>
 
-      <FloatingButton spaceBottom={80}/>
+      <FloatingButton spaceBottom={80} onPress={() => navigation.navigate('NewDebitScreen')}/>
+
+      {isVisibleSureModal && (
+        <SureModal
+          text="Tem certeza que deseja excluir esse registo de cliente?"
+          onClose={closeSureModal}
+          onSure={() => {
+            console.log("cliente excluído: " + client.name)
+            closeSureModal()
+            showSuccessModal()
+          }}
+        />
+      )}
+
+      {isVisibleSuccessModal && (
+        <SuccessModal
+          text="Excluído com sucesso!"
+          onClose={() => navigation.goBack()}
+        />
+      )}
+      
     </View>
   )
 }

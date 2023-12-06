@@ -1,42 +1,82 @@
 import { StyleSheet, Text, View, Image, TextInput, Dimensions, TouchableOpacity    } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Appbar } from 'react-native-paper'
 import { TextInputMask } from 'react-native-masked-text'
 import { useNavigation } from '@react-navigation/native';
+import dayjs from 'dayjs';
 
-import FloatingButton from '../atoms/floating_button'
 import CancelButton from '../atoms/cancel_button'
 import SaveButton from '../atoms/save_button'
+import FormLabelMandatory from '../molecules/form_label_mandatory';
+import { removeSpaces, transformDataForBR, transformDate, validateInputDate, validateRequired } from '../../utils';
 
 export default function NewDebitScreen () {
   const navigation = useNavigation();
+  const today = new Date()
+  
+  const createDateToday = dayjs(today).format('DD/MM/YYYY').toString()
 
-  const [cpf, setCpf] = useState(null);
-  const [errorCpf, setErrorCpf] = useState(null);
+  const [debitName, setDebitName] = useState('');
+  const [errorDebitName, setErrorDebitName] = useState('');
 
-  const [payedDate, setPayedDate] = useState(null);
-  const [errorPayedDate, setErrorPayedDate] = useState(null);
+  const [payedDate, setPayedDate] = useState('');
+  const [errorPayedDate, setErrorPayedDate] = useState('');
 
-  const [creationDate, setCreationDate] = useState(null);
-  const [errorCreationDate, setErrorCreationDate] = useState(null);
+  const [creationDate, setCreationDate] = useState(createDateToday);
+  const [errorCreationDate, setErrorCreationDate] = useState('');
 
-  const [price, setPrice] = useState(null);
-  const [errorPrice, setErrorPrice] = useState(null);
+  const [price, setPrice] = useState('');
+  const [errorPrice, setErrorPrice] = useState('');
+
+  const [haveEmptyInput, setHaveEmptyInput] = useState(true)
+
+  const [isPayed, setIsPayed] = useState(false)
+
+  useEffect(() => {
+    console.log("isPayed------------------------------------")
+    console.log(isPayed)
+    console.log(errorDebitName)
+    console.log(errorCreationDate)
+    console.log(errorPrice),
+    console.log(errorPayedDate)
+
+    setHaveEmptyInput(!removeSpaces(debitName) || !creationDate || !price || (isPayed && !payedDate));
+  }, [errorDebitName, errorCreationDate, errorPrice, errorPayedDate, debitName, creationDate, price, payedDate])
+
+  const validateForm = () => {
+    setErrorDebitName(validateRequired(removeSpaces(debitName)))
+    setErrorCreationDate(validateInputDate(transformDate(creationDate)))
+    setErrorPrice(validateRequired(price))
+    if(isPayed){
+      setErrorPayedDate(validateInputDate(transformDate(payedDate)))
+    }
+  }
+
+  onPressSaveButton = () => {
+      validateForm()
+  }
   
   return (
     <View style={styles.screen}>
 
       <View>
-        <Text style={styles.label}>Nome da dívida</Text>
-        <TextInput style={styles.input}/>
+        <FormLabelMandatory text='Nome da dívida'/>
+        <TextInput
+          style={!errorDebitName ? styles.input : styles.inputError}
+          value={debitName}
+          onChangeText={value => {
+            setDebitName(value)
+          }}
+        />
       </View>
+      <Text style={styles.textError}>{errorDebitName}</Text>
 
       <View style={styles.rowForm}>
       <View>
-          <Text style={styles.label}>Data de criação</Text>
+          <FormLabelMandatory text='Data de criação'/>
           <TextInputMask
             value={creationDate}
-            style={styles.inputHalfScreen}
+            style={!errorCreationDate ? styles.inputHalfScreen : styles.inputHalfScreenError}
             keyboardType='numeric'
             type={'datetime'}
             options={{format: 'DD/MM/YYYY'}}
@@ -45,13 +85,14 @@ export default function NewDebitScreen () {
               setErrorCreationDate(null)
             }}
           />
+          <Text style={styles.textError}>{errorCreationDate}</Text>
         </View>
         <View>
-          <Text style={styles.label}>Valor</Text>
+          <FormLabelMandatory text='Valor'/>
           <TextInputMask
           type={'money'}
             value={price}
-            style={styles.inputHalfScreen}
+            style={!errorPrice ? styles.inputHalfScreen : styles.inputHalfScreenError}
             keyboardType='numeric'
             onChangeText={value => {
               setPrice('')
@@ -59,29 +100,46 @@ export default function NewDebitScreen () {
               setErrorPrice(null)
             }}
           />
+          <Text style={styles.textError}>{errorPrice}</Text>
         </View>
         
       </View>
 
-      <View>
-          <Text style={styles.label}>Data do pagamento</Text>
-          <TextInputMask
-            value={payedDate}
-            style={styles.inputHalfScreen}
-            keyboardType='numeric'
-            type={'datetime'}
-            options={{format: 'DD/MM/YYYY'}}
-            onChangeText={value => {
-              setPayedDate(value)
-              setErrorPayedDate(null)
-            }}
-          />
-        </View>
+        <TouchableOpacity style={styles.row} onPress={()=>setIsPayed(!isPayed)}>
+        { !isPayed 
+          ? <Image
+            source={require('../../../assets/icons/box_uncheck.png')}
+            style={{ width: 20, height: 20, marginRight: 5, tintColor: '#62A856' }}
+          /> 
+          : <Image
+              source={require('../../../assets/icons/box_check.png')}
+              style={{ width: 20, height: 20, marginRight: 5, tintColor: '#62A856' }}
+            />}
+        <Text style={styles.isPayedText}>Dívida já está paga</Text>
+      </TouchableOpacity>
+
+      { isPayed
+        ? <View>
+            <FormLabelMandatory text='Data do pagamento'/>
+            <TextInputMask
+              value={payedDate}
+              style={!errorPayedDate ? styles.inputHalfScreen : styles.inputHalfScreenError}
+              keyboardType='numeric'
+              type={'datetime'}
+              options={{format: 'DD/MM/YYYY'}}
+              onChangeText={value => {
+                setPayedDate(value)
+              }}
+            />
+            <Text style={styles.textError}>{errorPayedDate}</Text>
+          </View>
+        : null
+      }
 
       <View style={styles.debitContainer}>
         <View style={styles.rowButtons}>
-          <CancelButton onPress={() => console.warn('cancelado')}/>
-          <SaveButton onPress={() => console.warn('salvo')}/>
+          <CancelButton onPress={() => navigation.goBack()}/>
+          <SaveButton onPress={onPressSaveButton} isAble={!haveEmptyInput}/>
         </View>
       </View>
     </View>
@@ -100,7 +158,14 @@ const styles = StyleSheet.create({
     borderColor: '#cecece',
     borderRadius: 8,
     marginTop: 2,
-    marginBottom: 10,
+    padding: 5,
+  },
+  inputError:{
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#CE2929',
+    borderRadius: 8,
+    marginTop: 2,
     padding: 5,
   },
   inputHalfScreen: {
@@ -109,9 +174,22 @@ const styles = StyleSheet.create({
     borderColor: '#cecece',
     borderRadius: 8,
     marginTop: 2,
-    marginBottom: 10,
     padding: 5,
     width: ((Dimensions.get('window').width)-80) /2 
+  },
+  inputHalfScreenError: {
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#CE2929',
+    borderRadius: 8,
+    marginTop: 2,
+    padding: 5,
+    width: ((Dimensions.get('window').width)-80) /2 
+  },
+  row: {
+    flexDirection: 'row',
+    marginTop: 5,
+    paddingBottom: 10
   },
   rowForm: {
     flexDirection: 'row',
@@ -146,6 +224,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  textError:{
+    fontSize: 10,
+    color: '#CE2929',
+    fontFamily: "OpenSans SemiBold",
+    marginBottom: 5
   }
-
 })

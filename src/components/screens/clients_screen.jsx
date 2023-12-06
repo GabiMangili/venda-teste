@@ -11,7 +11,6 @@ const clients = [
     name: 'Maria Helena de Rodrigues',
     cpf: '56640484846',
     email:'maria.helena@gmail.com',
-    totalDebit: '10.000',
     birthDate: '22-10-2002'
   },
   {
@@ -19,7 +18,6 @@ const clients = [
     name: 'Silvânia Valladares Heizelman',
     cpf: '86673339136',
     email:'silvania@gmail.com',
-    totalDebit: '100',
     birthDate: '22-10-2002'
   },
   {
@@ -27,7 +25,6 @@ const clients = [
     name: 'George Darmont Pires',
     cpf: '313.414.462-04',
     email:'marco.pires@outlook.com.br',
-    totalDebit: '80.000',
     birthDate: '22-10-2002'
   },
   {
@@ -35,7 +32,6 @@ const clients = [
     name: 'Marco Pires Silvino',
     cpf: '313.414.462-04',
     email:'marco.pires@outlook.com.br',
-    totalDebit: '80.000',
     birthDate: '22-10-2002'
   },
 ];
