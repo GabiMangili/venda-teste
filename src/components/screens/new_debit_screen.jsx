@@ -11,9 +11,10 @@ import FormLabelMandatory from '../molecules/form_label_mandatory';
 import { removeSpaces, transformDataForBR, transformDate, validateInputDate, validateRequired } from '../../utils';
 
 export default function NewDebitScreen ({route}) {
-  var debit = route.params.debit
 
-  var isEdit = debit === null ? false : true
+  var debit = route.params.debit ?? null
+
+  var isEdit = !debit ? false : true
   console.log('debito ')
   console.log({debit})
 

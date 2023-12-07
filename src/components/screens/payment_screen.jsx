@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Dimensions, FlatList, Image, TouchableOpacity } from 'react-native'
-import React, { useState, useLayoutEffect, useRef  } from 'react'
+import React, { useState, useLayoutEffect, useRef, useEffect  } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { Modalize } from 'react-native-modalize';
 
@@ -11,6 +11,7 @@ import SuccessModal from '../organisms/modals/success_modal';
 import SureModal from '../organisms/modals/sure_modal';
 import CancelButton from '../atoms/cancel_button';
 import SaveConfirmButton from '../atoms/save_confirm_button';
+import InfoModal from '../organisms/modals/info_modal';
 
 const PaymentScreen = ({route}) => {
   const navigation = useNavigation()
@@ -28,7 +29,8 @@ const PaymentScreen = ({route}) => {
   const [isVisibleSureModal, setVisibleSureModal] = useState(false);
   const [isVisibleDeleteSuccessModal, setDeleteSuccessModalVisible] = useState(false);
   const [isVisiblePaySuccessModal, setPaySuccessModalVisible] = useState(false);
-  
+  const [isVisibleDebtLimitModal, setVisibleDebtLimitModal] = useState(false); 
+  const [isButtonPlusClicked, setButtonPlusClicked] = useState(false); 
 
   const showSureModal = () => {
     setVisibleSureModal(true);
@@ -48,101 +50,118 @@ const PaymentScreen = ({route}) => {
 
 
 
-const debits = [
-  {
-    id: 1,
-    description: 'divida 1',
-    price: 1200,
-    paymentDate: '15-11-2023',
-    creationDate: '14-11-2023'
-  },
-  {
-    id: 2,
-    description: 'divida 2',
-    price: '12.000',
-    paymentDate: '15-11-2023',
-    creationDate: '14-11-2023'
-  },
-  {
-    id: 3,
-    description: 'divida 3',
-    price: 12.000,
-    paymentDate: '15-11-2023',
-    creationDate: '14-11-2023'
-  },
-  {
-    id: 4,
-    description: 'divida 4',
-    price: 12.000,
-    paymentDate: null,
-    creationDate: '14-11-2023'
-  },
-  {
-    id: 5,
-    description: 'divida 5',
-    price: 12.000,
-    paymentDate: '15-11-2023'
-  },
-]
+  const debits = [
+    {
+      id: 1,
+      description: 'divida 1',
+      price: 1200,
+      paymentDate: '15-11-2023',
+      creationDate: '14-11-2023'
+    },
+    {
+      id: 2,
+      description: 'divida 2',
+      price: '12.000',
+      paymentDate: '15-11-2023',
+      creationDate: '14-11-2023'
+    },
+    {
+      id: 3,
+      description: 'divida 3',
+      price: 12.000,
+      paymentDate: '15-11-2023',
+      creationDate: '14-11-2023'
+    },
+    {
+      id: 4,
+      description: 'divida 4',
+      price: 12.000,
+      paymentDate: null,
+      creationDate: '14-11-2023'
+    },
+    {
+      id: 5,
+      description: 'divida 5',
+      price: 12.000,
+      paymentDate: '15-11-2023'
+    },
+  ]
 
-useLayoutEffect(() => {
-  navigation.setOptions({
-    headerRight: () => (
-      <TouchableOpacity
-        style={{ marginRight: 15 }}
-        onPress={showSureModal}
-      >
-        <Image
-          source={require('../../../assets/icons/delete.png')}
-          style={{ width: 25, height: 25, tintColor: '#CE2929' }}
-        />
-      </TouchableOpacity>
-    ),
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          style={{ marginRight: 15 }}
+          onPress={showSureModal}
+        >
+          <Image
+            source={require('../../../assets/icons/delete.png')}
+            style={{ width: 25, height: 25, tintColor: '#CE2929' }}
+          />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
+  useEffect(() => {
+    if(isButtonPlusClicked){
+      if(!haveDebitOpen){
+        navigation.navigate('NewDebitScreen', {})
+      } else {
+        setVisibleDebtLimitModal(true)
+      }
+      setButtonPlusClicked(false)
+  }
+  }, [haveDebitOpen, isButtonPlusClicked])
+
+  const onPressPlusButton = () => {
+    setButtonPlusClicked(true)
+
+    const filteredDebits = debits.filter(debit => debit.paymentDate == null);
+    console.log(filteredDebits.length)
+
+    if(filteredDebits.length > 0){
+      setHaveDebitOpen(true);
+    } else {
+      setHaveDebitOpen(false)
+    }
+
+    console.log("haveDebitOpen: " +  haveDebitOpen)
+  }
+
+  const hideModalDebitOpen = () => {
+    console.log('setando setVisivleDebitLimitmModal -> false')
+    setVisibleDebtLimitModal(false)
+  }
+
+  const modalizeRef = useRef(null);
+
+  onOpen = (event) => {
+    event.persist();
+    if (modalizeRef.current) {
+      console.log('opened');
+      modalizeRef.current.open();
+    } else {
+      console.error('Modalize is not initialized or mounted.');
+    }
+  };
+
+  const renderItem = ({ item, index }) => (
+    <View>
+      <View style={{height: index == 0 ? 0 : 0}}/>
+        <DebitItem item={item} onClickButton={onOpen}/>
+      <View style={{height: index == debits.length - 1 ? 20 : 0}}/>
+    </View>
+  );
+
+  const debitsSorted = debits.sort((debitA, debitB) => {
+    if (debitA.paymentDate === null && debitB.paymentDate !== null) {
+      return -1;
+    } else if (debitA.paymentDate !== null && debitB.paymentDate === null) {
+      return 1;
+    }
+    return 0;
   });
-}, [navigation]);
-
-onPressPlusButton = () => {
-  const filteredDebits = debits.filter(debit => debit.paymentDate === null);
-  console.log(filteredDebits.length)
-  if(filteredDebits.length > 0){
-    setHaveDebitOpen(true);
-  } else {
-    setHaveDebitOpen(false)
-  }
-
-  if(!haveDebitOpen){
-    navigation.navigate('NewDebitScreen')
-  }
-}
-
-const modalizeRef = useRef(null);
-
-onOpen = (event) => {
-  event.persist();
-  if (modalizeRef.current) {
-    console.log('opened');
-    modalizeRef.current.open();
-  } else {
-    console.error('Modalize is not initialized or mounted.');
-  }
-};
-
-const renderItem = ({ item, index }) => (
-  <View>
-    <View style={{height: index == 0 ? 0 : 0}}/>
-      <DebitItem item={item} onClickButton={onOpen}/>
-    <View style={{height: index == debits.length - 1 ? 20 : 0}}/>
-  </View>
-);
-
-const debitsSorted = debits.sort((debitA, debitB) => {
-  if (debitA.paymentDate === null && debitB.paymentDate !== null) {
-    return -1;
-  } else if (debitA.paymentDate !== null && debitB.paymentDate === null) {
-    return 1;
-  }
-  return 0;
-});
 
 
   return (
@@ -188,7 +207,7 @@ const debitsSorted = debits.sort((debitA, debitB) => {
         />
       </View>
 
-      <FloatingButton spaceBottom={80}/>
+      <FloatingButton spaceBottom={80} onPress={onPressPlusButton}/>
 
       <Modalize
         ref={modalizeRef}
@@ -227,6 +246,10 @@ const debitsSorted = debits.sort((debitA, debitB) => {
           text="Excluído com sucesso!"
           onClose={() => navigation.goBack()}
         />
+      )}
+
+      {isVisibleDebtLimitModal && (
+        <InfoModal text='Um cliente não pode ter mais de uma dívida em aberto' onClose={hideModalDebitOpen}/>
       )}
 
       {isVisiblePaySuccessModal && (
