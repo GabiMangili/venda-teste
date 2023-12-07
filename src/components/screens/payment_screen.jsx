@@ -1,13 +1,17 @@
 import { StyleSheet, Text, View, Dimensions, FlatList, Image, TouchableOpacity } from 'react-native'
-import React, { useState, useLayoutEffect  } from 'react'
+import React, { useState, useLayoutEffect, useRef, useEffect  } from 'react'
 import { useNavigation } from '@react-navigation/native';
+import { Modalize } from 'react-native-modalize';
 
 import FloatingButton from '../atoms/floating_button'
-import DebitItem from '../organisms/debits_item'
+import DebitItem from '../organisms/debit_item'
 import EditButton from '../atoms/edit_button'
 import DeleteModal from '../organisms/modals/deleted_modal';
 import SuccessModal from '../organisms/modals/success_modal';
 import SureModal from '../organisms/modals/sure_modal';
+import CancelButton from '../atoms/cancel_button';
+import SaveConfirmButton from '../atoms/save_confirm_button';
+import InfoModal from '../organisms/modals/info_modal';
 
 const PaymentScreen = ({route}) => {
   const navigation = useNavigation()
@@ -20,15 +24,20 @@ const PaymentScreen = ({route}) => {
     navigation.navigate('StackRoutes', { clientToDelete: client });
   };
 
+  const [haveDebitOpen, setHaveDebitOpen] = useState(false)
+
   const [isVisibleSureModal, setVisibleSureModal] = useState(false);
-  const [isVisibleSuccessModal, setSuccessModalVisible] = useState(false);
+  const [isVisibleDeleteSuccessModal, setDeleteSuccessModalVisible] = useState(false);
+  const [isVisiblePaySuccessModal, setPaySuccessModalVisible] = useState(false);
+  const [isVisibleDebtLimitModal, setVisibleDebtLimitModal] = useState(false); 
+  const [isButtonPlusClicked, setButtonPlusClicked] = useState(false); 
 
   const showSureModal = () => {
     setVisibleSureModal(true);
   };
 
   const showSuccessModal = () => {
-    setSuccessModalVisible(true);
+    setDeleteSuccessModalVisible(true);
   };
 
   const closeSureModal = (result) => {
@@ -36,8 +45,47 @@ const PaymentScreen = ({route}) => {
   };
 
   const closeSuccessModal = (result) => {
-    setSuccessModalVisible(false);
+    setDeleteSuccessModalVisible(false);
   };
+
+
+
+  const debits = [
+    {
+      id: 1,
+      description: 'divida 1',
+      price: 1200,
+      paymentDate: '15-11-2023',
+      creationDate: '14-11-2023'
+    },
+    {
+      id: 2,
+      description: 'divida 2',
+      price: '12.000',
+      paymentDate: '15-11-2023',
+      creationDate: '14-11-2023'
+    },
+    {
+      id: 3,
+      description: 'divida 3',
+      price: 12.000,
+      paymentDate: '15-11-2023',
+      creationDate: '14-11-2023'
+    },
+    {
+      id: 4,
+      description: 'divida 4',
+      price: 12.000,
+      paymentDate: null,
+      creationDate: '14-11-2023'
+    },
+    {
+      id: 5,
+      description: 'divida 5',
+      price: 12.000,
+      paymentDate: '15-11-2023'
+    },
+  ]
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -55,47 +103,66 @@ const PaymentScreen = ({route}) => {
     });
   }, [navigation]);
 
+  useEffect(() => {
+    if(isButtonPlusClicked){
+      if(!haveDebitOpen){
+        navigation.navigate('NewDebitScreen', {})
+      } else {
+        setVisibleDebtLimitModal(true)
+      }
+      setButtonPlusClicked(false)
+  }
+  }, [haveDebitOpen, isButtonPlusClicked])
 
-const debits = [
-  {
-    id: 1,
-    description: 'divida 1',
-    price: 1200,
-    paymentDate: null
-  },
-  {
-    id: 2,
-    description: 'divida 2',
-    price: '12.000',
-    paymentDate: '15-11-2023'
-  },
-  {
-    id: 3,
-    description: 'divida 3',
-    price: 12.000,
-    paymentDate: null
-  },
-  {
-    id: 4,
-    description: 'divida 4',
-    price: 12.000,
-    paymentDate: '20-11-2023'
-  },
-  {
-    id: 5,
-    description: 'divida 5',
-    price: 12.000,
-    paymentDate: null
-  },
-]
+  const onPressPlusButton = () => {
+    setButtonPlusClicked(true)
 
-const renderItem = ({ item, index }) => (
-  <View>
-    <View style={{height: index == 0 ? 0 : 0}}/>
-      <DebitItem item={item}/>
-    <View style={{height: index == debits.length - 1 ? 20 : 0}}/>
-  </View>
-);
+    const filteredDebits = debits.filter(debit => debit.paymentDate == null);
+    console.log(filteredDebits.length)
+
+    if(filteredDebits.length > 0){
+      setHaveDebitOpen(true);
+    } else {
+      setHaveDebitOpen(false)
+    }
+
+    console.log("haveDebitOpen: " +  haveDebitOpen)
+  }
+
+  const hideModalDebitOpen = () => {
+    console.log('setando setVisivleDebitLimitmModal -> false')
+    setVisibleDebtLimitModal(false)
+  }
+
+  const modalizeRef = useRef(null);
+
+  onOpen = (event) => {
+    event.persist();
+    if (modalizeRef.current) {
+      console.log('opened');
+      modalizeRef.current.open();
+    } else {
+      console.error('Modalize is not initialized or mounted.');
+    }
+  };
+
+  const renderItem = ({ item, index }) => (
+    <View>
+      <View style={{height: index == 0 ? 0 : 0}}/>
+        <DebitItem item={item} onClickButton={onOpen}/>
+      <View style={{height: index == debits.length - 1 ? 20 : 0}}/>
+    </View>
+  );
+
+  const debitsSorted = debits.sort((debitA, debitB) => {
+    if (debitA.paymentDate === null && debitB.paymentDate !== null) {
+      return -1;
+    } else if (debitA.paymentDate !== null && debitB.paymentDate === null) {
+      return 1;
+    }
+    return 0;
+  });
+
 
   return (
     <View style={styles.screen}>
@@ -130,7 +197,9 @@ const renderItem = ({ item, index }) => (
       <View style={styles.debitContainer}>
         <View style={styles.rowTitle}>
           <Text style={styles.title}>Dívidas</Text>
-          <Text style={styles.titleUnderline}>Ver todas</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('ShowAllDebitsScreen', {debits})}>
+            <Text style={styles.titleUnderline}>Ver todas</Text>
+          </TouchableOpacity>
         </View>
         <FlatList
           data={debits}
@@ -138,7 +207,27 @@ const renderItem = ({ item, index }) => (
         />
       </View>
 
-      <FloatingButton spaceBottom={80} onPress={() => navigation.navigate('NewDebitScreen')}/>
+      <FloatingButton spaceBottom={80} onPress={onPressPlusButton}/>
+
+      <Modalize
+        ref={modalizeRef}
+        snapPoint={200}
+        panGestureEnabled={false}
+        onContentSizeChange={(width, height) => {
+          console.log('Layout do Modalize:', { width, height });
+        }}
+      >
+        <View style={styles.modalContent}>
+          <Text style={styles.modalText}>Ao confirmar, essa dívida será quitada. Deseja realmente confirmar?</Text>
+          <View style={styles.rowButtons}>
+            <CancelButton onPress={() => modalizeRef.current.close()}/>
+            <SaveConfirmButton isAble={true} onPress={() => {
+                setPaySuccessModalVisible(true)
+                modalizeRef.current.close()
+              }} text='Confirmar'/>
+          </View>
+        </View>
+      </Modalize>
 
       {isVisibleSureModal && (
         <SureModal
@@ -152,12 +241,25 @@ const renderItem = ({ item, index }) => (
         />
       )}
 
-      {isVisibleSuccessModal && (
+      {isVisibleDeleteSuccessModal && (
         <SuccessModal
           text="Excluído com sucesso!"
           onClose={() => navigation.goBack()}
         />
       )}
+
+      {isVisibleDebtLimitModal && (
+        <InfoModal text='Um cliente não pode ter mais de uma dívida em aberto' onClose={hideModalDebitOpen}/>
+      )}
+
+      {isVisiblePaySuccessModal && (
+        <SuccessModal
+          text="Dívida paga com sucesso!"
+          onClose={() => {
+            setPaySuccessModalVisible(false)
+          }}
+        />
+      )}  
       
     </View>
   )
@@ -170,7 +272,32 @@ const formatCPF = (cpf) => {
 
 export default PaymentScreen
 
+//() => navigation.navigate('ShowAllDebitsScreen', {debits})
+
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  openButton: {
+    color: 'blue',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  modalContent: {
+    height: 200,
+    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1
+  },
+  modalText: {
+    fontSize: 14,
+    textAlign: 'center',
+    fontFamily: "OpenSans SemiBold",
+    marginBottom: 20
+  },
   screen: {
     height: Dimensions.get('screen').height,
     flex: 1
@@ -245,5 +372,9 @@ const styles = StyleSheet.create({
   },
   singularDataContainer: {
     marginBottom: 25
-  }
+  },
+  rowButtons: {
+    flexDirection: 'row',
+    alignSelf: 'center'
+  },
 })

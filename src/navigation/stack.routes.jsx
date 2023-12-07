@@ -9,6 +9,7 @@ import RegisterClientScreen from '../components/screens/register_client_screen';
 import NewDebitScreen from '../components/screens/new_debit_screen';
 import PaymentScreen from '../components/screens/payment_screen';
 import EditClientScreen from '../components/screens/edit_clients_screen';
+import ShowAllDebitsScreen from '../components/screens/show_all_debits_screen';
 //import SureModal from '../components/organisms/modals/sure_modal';
 
 const Stack = createNativeStackNavigator();
@@ -53,6 +54,15 @@ export default function StackRoutes() {
           options={({ navigation }) => ({
             ...customHeaderStyles(navigation),
             headerTitle: 'Editar cliente',
+          })}
+        />
+
+        <Stack.Screen 
+          name='ShowAllDebitsScreen' 
+          component={ShowAllDebitsScreen} 
+          options={({ navigation }) => ({
+            ...customHeaderStyles(navigation),
+            headerTitle: 'Dívidas',
           })}
         />
     </Stack.Navigator>

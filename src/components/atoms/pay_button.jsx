@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import React from 'react'
 
-const PayButton = ({onPress}, isAble) => {
+const PayButton = ({onPress}) => {
 
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
+    <TouchableOpacity style={styles.button} onPress={(event) => onPress(event)}>
         <Text style={styles.text}>Pagar</Text>
     </TouchableOpacity>
   )

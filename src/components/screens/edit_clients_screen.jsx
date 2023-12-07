@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import FormClientData from '../templates/form_client_data'
 import { removeSpaces, transformDate, validateCPFNumber, validateEmail, validateInputDate, validateRequired } from '../../utils';
 import CancelButton from '../atoms/cancel_button';
-import SaveButton from '../atoms/save_button';
+import SaveConfirmButton from '../atoms/save_confirm_button';
 
 const EditClientScreen = ({route}) => {
 
@@ -85,7 +85,7 @@ const EditClientScreen = ({route}) => {
       <FormClientData onFormChange={handleFormChange} client={client} errorFormData={errorFormMessagesData}/>
       <View style={styles.rowButtons}>
           <CancelButton onPress={() => navigation.goBack()}/>
-          <SaveButton isAble={!haveEmptyInput} onPress={onPressSaveButton}/>
+          <SaveConfirmButton isAble={!haveEmptyInput} onPress={onPressSaveButton}/>
         </View>
     </View>
   )

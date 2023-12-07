@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import React from 'react'
 
-const SaveButton = ({onPress, isAble}) => {
+const SaveConfirmButton = ({onPress, isAble, text='Salvar'}) => {
+
     var isAbleButton = isAble == null || isAble == false ? false : true
 
     const styles = StyleSheet.create({
@@ -11,7 +12,8 @@ const SaveButton = ({onPress, isAble}) => {
             backgroundColor: isAbleButton ? '#62A856' : 'gray',
             borderRadius: 8,
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
+            
         },
         text: {
             fontSize: 16,
@@ -22,9 +24,9 @@ const SaveButton = ({onPress, isAble}) => {
 
   return (
     <TouchableOpacity style={styles.button} onPress={onPress}>
-        <Text style={styles.text}>Salvar</Text>
+        <Text style={styles.text}>{text}</Text>
     </TouchableOpacity>
   )
 }
 
-export default SaveButton
+export default SaveConfirmButton
