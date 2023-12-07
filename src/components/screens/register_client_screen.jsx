@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { removeSpaces, transformDate, validateCPFNumber, validateEmail, validateInputDate, validateRequired } from '../../utils';
 import FloatingButton from '../atoms/floating_button'
 import CancelButton from '../atoms/cancel_button'
-import SaveButton from '../atoms/save_button'
+import SaveConfirmButton from '../atoms/save_confirm_button'
 import FormClientData from '../templates/form_client_data';
 
 export default function RegisterClientScreen () {
@@ -88,7 +88,7 @@ export default function RegisterClientScreen () {
         </View>
         <View style={styles.rowButtons}>
           <CancelButton onPress={() => navigation.goBack()}/>
-          <SaveButton isAble={!haveEmptyInput} onPress={onPressSaveButton}/>
+          <SaveConfirmButton isAble={!haveEmptyInput} onPress={onPressSaveButton}/>
         </View>
       </View>
       <FloatingButton spaceBottom={80} onPress={() => navigation.navigate("NewDebitScreen") }/>

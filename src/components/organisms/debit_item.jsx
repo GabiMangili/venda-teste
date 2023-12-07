@@ -1,21 +1,23 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
-import SaveButton from '../atoms/save_button'
+import { useNavigation } from '@react-navigation/native';
+
+import SaveConfirmButton from '../atoms/save_confirm_button'
 import PayButton from '../atoms/pay_button'
 
-const DebitItem = (item) => {
+const DebitItem = ({item, onClickButton}) => {
+  const navigation = useNavigation();
 
-  //const item = item.params
-
-  const debit = item.item
+  const debit = item
+  console.log('debit/item')
   console.log(debit)
 
   return (
-    <View style={styles.card}>
+    <TouchableOpacity onPress={() => navigation.navigate('NewDebitScreen', {debit})} style={styles.card}>
       <View style={styles.row}>
         <Text style={styles.descText}>{debit.description}</Text>
         {debit.paymentDate == null
-        ? <PayButton/> 
+        ? <PayButton onPress={onClickButton}/> 
         : <Image
             source={require('../../../assets/icons/check.png')}
             style={{ width: 20, height: 20 }}
@@ -25,7 +27,7 @@ const DebitItem = (item) => {
       <Text style={styles.priceIndicatorText}>Valor da dívida:</Text>
       <Text style={styles.priceText}>RS {debit.price}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   )
 }
 
@@ -34,15 +36,15 @@ export default DebitItem
 const styles = StyleSheet.create({
   card: {
     height: 85,
-        padding: 10,
-        margin: 30,
-        backgroundColor: '#fff',
-        borderColor: '#000',
-        elevation: 10,
-        borderRadius: 8,
-        justifyContent:'space-between',
-        marginTop: 12,
-        marginBottom:  12
+    padding: 10,
+    margin: 30,
+    backgroundColor: '#fff',
+    borderColor: '#000',
+    elevation: 10,
+    borderRadius: 8,
+    justifyContent:'space-between',
+    marginTop: 12,
+    marginBottom:  12
   },
   row: {
     justifyContent: 'space-between',

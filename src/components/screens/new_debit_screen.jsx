@@ -6,34 +6,40 @@ import { useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
 
 import CancelButton from '../atoms/cancel_button'
-import SaveButton from '../atoms/save_button'
+import SaveConfirmButton from '../atoms/save_confirm_button'
 import FormLabelMandatory from '../molecules/form_label_mandatory';
 import { removeSpaces, transformDataForBR, transformDate, validateInputDate, validateRequired } from '../../utils';
 
-export default function NewDebitScreen () {
+export default function NewDebitScreen ({route}) {
+  var debit = route.params.debit
+
+  var isEdit = debit === null ? false : true
+  console.log('debito ')
+  console.log({debit})
+
   const navigation = useNavigation();
   const today = new Date()
   
   const createDateToday = dayjs(today).format('DD/MM/YYYY').toString()
 
-  const [debitName, setDebitName] = useState('');
+  const [debitName, setDebitName] = useState(isEdit ? debit.description : '');
   const [errorDebitName, setErrorDebitName] = useState('');
 
-  const [payedDate, setPayedDate] = useState('');
+  const [payedDate, setPayedDate] = useState(isEdit ? debit.paymentDate : '');
   const [errorPayedDate, setErrorPayedDate] = useState('');
 
-  const [creationDate, setCreationDate] = useState(createDateToday);
+  const [creationDate, setCreationDate] = useState(isEdit ? debit.creationDate : createDateToday);
   const [errorCreationDate, setErrorCreationDate] = useState('');
 
-  const [price, setPrice] = useState('');
+  const [price, setPrice] = useState(isEdit ? debit.price : '');
   const [errorPrice, setErrorPrice] = useState('');
 
   const [haveEmptyInput, setHaveEmptyInput] = useState(true)
 
-  const [isPayed, setIsPayed] = useState(false)
+  const [isPayed, setIsPayed] = useState(!payedDate ? false : true)
 
   useEffect(() => {
-    console.log("isPayed------------------------------------")
+    console.log("isPayed------------------------------")
     console.log(isPayed)
     console.log(errorDebitName)
     console.log(errorCreationDate)
@@ -139,7 +145,7 @@ export default function NewDebitScreen () {
       <View style={styles.debitContainer}>
         <View style={styles.rowButtons}>
           <CancelButton onPress={() => navigation.goBack()}/>
-          <SaveButton onPress={onPressSaveButton} isAble={!haveEmptyInput}/>
+          <SaveConfirmButton onPress={onPressSaveButton} isAble={!haveEmptyInput}/>
         </View>
       </View>
     </View>

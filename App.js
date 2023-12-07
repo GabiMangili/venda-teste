@@ -1,3 +1,4 @@
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import * as Font from "expo-font";
 import { StyleSheet, Text, View } from 'react-native';
 import { useState } from 'react';
@@ -17,7 +18,9 @@ export default function App() {
 
   if(fontsLoaded){
     return (
-    <Routes/>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Routes/>
+      </GestureHandlerRootView>
   );
   } else {
     return (
