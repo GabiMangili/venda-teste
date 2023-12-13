@@ -28,4 +28,23 @@ export default class DebitController {
             throw error
         }
     }
+
+    async payDebit(debitId) {
+        const endpoint = 'https://modeloproxyapi.interfocus.com.br:4443/api/Divida/Pagar'
+
+        try{
+            const response = await axios.put(endpoint, 
+                {
+                    "dividaId": debitId
+                })
+                if (response.status >= 200 && response.status < 300) {
+                    console.log('Requisição bem-sucedida');
+                    console.log('Resposta da API (pagar debito):', response.data);
+                  } else {
+                    console.error('Erro na requisição (pagar debito):', response.status);
+                  }
+        } catch (error) {
+            console.error('Erro ao fazer a requisição PUT:', error);
+        }
+    }
 }

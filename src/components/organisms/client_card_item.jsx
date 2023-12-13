@@ -4,14 +4,14 @@ import { useNavigation } from '@react-navigation/native';
 
 import Divider from '../atoms/divider'
 
-const ClientCardItem = ({item}) => {
+const ClientCardItem = ({item, refreshLists}) => {
     const navigation = useNavigation()
     
     var client = item; 
     console.log(client)
 
   return ( 
-    <TouchableOpacity onPress={() => navigation.navigate('PaymentScreen', {client: client})} activeOpacity={0.85}>
+    <TouchableOpacity onPress={() => navigation.navigate('PaymentScreen', {client: client, refreshLists: refreshLists})} activeOpacity={0.85}>
     <View style={[styles.container]}>
 
         <Text style={styles.name}>{client.nome}</Text>  

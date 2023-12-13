@@ -40,10 +40,17 @@ import DebitController from '../../controllers/debit_controller';
     }
 
     
+    
     useEffect(() => {
       getClients();
       getDebitsOpen();
     }, []); 
+
+    function refreshListClientsAndDebitsOpen(){
+      console.log('*refreshing lists*')
+      getClients();
+      getDebitsOpen();
+    };
   
     useEffect(() => {
       if (clients && debitsOpen) {
@@ -97,7 +104,7 @@ import DebitController from '../../controllers/debit_controller';
   const renderItem = ({ item, index }) => (
     <View>
       <View style={{height: index == 0 ? 5 : 0}}/>
-      <ClientCardItem item={item}/>
+      <ClientCardItem item={item} refreshLists={refreshListClientsAndDebitsOpen}/>
       <View style={{height: index == clients.length - 1 ? 60 : 0}}/>
     </View>
     

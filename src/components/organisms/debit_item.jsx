@@ -1,22 +1,23 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, {useState} from 'react'
 import { useNavigation } from '@react-navigation/native';
 
 import SaveConfirmButton from '../atoms/save_confirm_button'
 import PayButton from '../atoms/pay_button'
 
-const DebitItem = ({item, onClickButton}) => {
+const DebitItem = ({item, onClickButton, isPayed, isDebitOpen}) => {
   const navigation = useNavigation();
 
   const debit = item
   console.log('debit/item')
   console.log(debit)
 
+
   return (
     <TouchableOpacity onPress={() => navigation.navigate('NewDebitScreen', {debit})} style={styles.card}>
       <View style={styles.row}>
         <Text style={styles.descText}>{debit.descricao}</Text>
-        {debit.dataPagamento == null
+        {isDebitOpen && !isPayed
         ? <PayButton onPress={onClickButton}/> 
         : <Image
             source={require('../../../assets/icons/check.png')}

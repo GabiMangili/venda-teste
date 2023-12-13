@@ -26,7 +26,7 @@ export default function NewDebitScreen ({route}) {
   const [debitName, setDebitName] = useState(isEdit ? debit.descricao : '');
   const [errorDebitName, setErrorDebitName] = useState('');
 
-  const [payedDate, setPayedDate] = useState(isEdit ? transformDateBR(debit.dataPagamento) : '');
+  const [payedDate, setPayedDate] = useState(isEdit && debit.dataPagamento ? transformDateBR(debit.dataPagamento) : '');
   const [errorPayedDate, setErrorPayedDate] = useState('');
 
   const [creationDate, setCreationDate] = useState(isEdit ? transformDateBR(debit.criadoEm) : createDateToday);
