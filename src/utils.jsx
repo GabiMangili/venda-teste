@@ -22,6 +22,10 @@ export function transformDate(inputDate) {
     return textWithouSpaces;
   }
 
+  export function transformDateBR(date){//yyyy-mm-dd para dd-mm-yyyy
+    return date.substring(0, 10).split("-").reverse().join("-")
+  }
+
   //VALIDATES
 
 export const validateRequired = (value) => {

@@ -1,43 +1,96 @@
 import { StyleSheet, Text, View, FlatList, TextInput, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 
 import ClientCardItem from '../organisms/client_card_item';
 import FloatingButton from '../atoms/floating_button';
-
-const clients = [ 
-  {
-    id: '1',
-    name: 'Maria Helena de Rodrigues',
-    cpf: '56640484846',
-    email:'maria.helena@gmail.com',
-    birthDate: '22-10-2002'
-  },
-  {
-    id: '2',
-    name: 'Silvânia Valladares Heizelman',
-    cpf: '86673339136',
-    email:'silvania@gmail.com',
-    birthDate: '22-10-2002'
-  },
-  {
-    id: '3',
-    name: 'George Darmont Pires',
-    cpf: '313.414.462-04',
-    email:'marco.pires@outlook.com.br',
-    birthDate: '22-10-2002'
-  },
-  {
-    id: '4',
-    name: 'Marco Pires Silvino',
-    cpf: '313.414.462-04',
-    email:'marco.pires@outlook.com.br',
-    birthDate: '22-10-2002'
-  },
-];
-
+import clientController from '../../controllers/client_controller';
+import DebitController from '../../controllers/debit_controller';
 
   const ClientsScreen = () => {
+
+    const [clients, setClients] = useState(null);
+    const [debitsOpen, setDebitsOpen] = useState(null)
+    const [runGets, setRunGets] = useState(true)
+    const [clientWithDebits, setClientWithDebits] = useState(null)
+
+    const getClients = async () => {
+      try {
+        const clientControllerInstance = new clientController();
+        const clienteData = await clientControllerInstance.getAllClients();
+        console.log('clientes')
+        //console.log(clienteData)
+
+        setClients(clienteData);
+      } catch (error){
+        console.error('Erro ao buscar cliente:', error);
+      }
+    }
+
+    const getDebitsOpen = async () => {
+      try {
+        const debitController = new DebitController()
+        const debitsOpenData = await debitController.getDebitsOpen()
+        setDebitsOpen(debitsOpenData) 
+        console.log('------------debitsOpenData===============')
+        //console.log(debitsOpenData)
+      } catch (error) {
+        console.error( 'Erro ao buscar dívidas em aberto') 
+      }
+    }
+
+    
+    useEffect(() => {
+      getClients();
+      getDebitsOpen();
+    }, []); 
+  
+    useEffect(() => {
+      if (clients && debitsOpen) {
+        const clientsWithDebitsData = clients.map((clientItem) => {
+          const debitForClient = debitsOpen.find(
+            (debitItem) => debitItem.cliente.id === clientItem.id
+          );
+    
+          return {
+            ...clientItem,
+            debits: debitForClient
+              ? {
+                  id: debitForClient.id,
+                  descricao: debitForClient.descricao,
+                  valor: debitForClient.valor,
+                  dataPagamento: debitForClient.dataPagamento,
+                  criadoEm: debitForClient.criadoEm,
+                  ultimaAlteracao: debitForClient.ultimaAlteracao,
+                }
+              : { valor: 0 },
+          };
+        });
+    
+        var sortClientByDebit = clientsWithDebitsData.sort((a, b) => {
+          const valueA = a.debits ? a.debits.valor : 0;
+          const valueB = b.debits ? b.debits.valor : 0;
+    
+          if (valueB !== valueA) {
+            return valueB - valueA;
+          }
+    
+          const nameA = a.nome.toUpperCase();
+          const nameB = b.nome.toUpperCase();
+          return nameA.localeCompare(nameB);
+        });
+    
+        setClientWithDebits(sortClientByDebit);
+        //console.log("FOR lista com debits");
+       /*  sortClientByDebit.forEach((element) => {
+          return console.log(element);
+        }); */
+      }
+    }, [clients, debitsOpen]); 
+    
+    
+
+    refreshClients = () => getClients()
 
   const navigation = useNavigation();
 
@@ -49,7 +102,7 @@ const clients = [
     </View>
     
   );
-  
+
   return (
     
     <View style={styles.screen}>
@@ -66,7 +119,7 @@ const clients = [
       </View>
       
       <FlatList 
-        data={clients}
+        data={clientWithDebits}
         renderItem={renderItem}
       />
       <FloatingButton spaceBottom={100} onPress={() => navigation.navigate("RegisterClient")}/>

@@ -14,7 +14,7 @@ const ClientCardItem = ({item}) => {
     <TouchableOpacity onPress={() => navigation.navigate('PaymentScreen', {client: client})} activeOpacity={0.85}>
     <View style={[styles.container]}>
 
-        <Text style={styles.name}>{client.name}</Text>  
+        <Text style={styles.name}>{client.nome}</Text>  
         <View style={styles.row}>
             <Text style={styles.indication}>CPF: </Text>
             <Text style={styles.dataClient}>{client.cpf}</Text>
@@ -26,7 +26,7 @@ const ClientCardItem = ({item}) => {
         <Divider/>
         <View style={styles.rowSpaceBetween}>
             <Text style={styles.name}>Valor da dívida: </Text>
-            <Text style={styles.totalDebit}>R$ {client.totalDebit}</Text>
+            <Text style={styles.totalDebit}>R$ {!(client.debits.valor) ? 0 : client.debits.valor}</Text>
         </View>
     </View>
     </TouchableOpacity>

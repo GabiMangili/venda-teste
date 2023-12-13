@@ -8,7 +8,7 @@ import dayjs from 'dayjs';
 import CancelButton from '../atoms/cancel_button'
 import SaveConfirmButton from '../atoms/save_confirm_button'
 import FormLabelMandatory from '../molecules/form_label_mandatory';
-import { removeSpaces, transformDataForBR, transformDate, validateInputDate, validateRequired } from '../../utils';
+import { removeSpaces, transformDateBR, transformDate, validateInputDate, validateRequired } from '../../utils';
 
 export default function NewDebitScreen ({route}) {
 
@@ -23,16 +23,16 @@ export default function NewDebitScreen ({route}) {
   
   const createDateToday = dayjs(today).format('DD/MM/YYYY').toString()
 
-  const [debitName, setDebitName] = useState(isEdit ? debit.description : '');
+  const [debitName, setDebitName] = useState(isEdit ? debit.descricao : '');
   const [errorDebitName, setErrorDebitName] = useState('');
 
-  const [payedDate, setPayedDate] = useState(isEdit ? debit.paymentDate : '');
+  const [payedDate, setPayedDate] = useState(isEdit ? transformDateBR(debit.dataPagamento) : '');
   const [errorPayedDate, setErrorPayedDate] = useState('');
 
-  const [creationDate, setCreationDate] = useState(isEdit ? debit.creationDate : createDateToday);
+  const [creationDate, setCreationDate] = useState(isEdit ? transformDateBR(debit.criadoEm) : createDateToday);
   const [errorCreationDate, setErrorCreationDate] = useState('');
 
-  const [price, setPrice] = useState(isEdit ? debit.price : '');
+  const [price, setPrice] = useState(isEdit ? debit.valor : '');
   const [errorPrice, setErrorPrice] = useState('');
 
   const [haveEmptyInput, setHaveEmptyInput] = useState(true)
