@@ -15,8 +15,8 @@ const DebitItem = ({item, onClickButton}) => {
   return (
     <TouchableOpacity onPress={() => navigation.navigate('NewDebitScreen', {debit})} style={styles.card}>
       <View style={styles.row}>
-        <Text style={styles.descText}>{debit.description}</Text>
-        {debit.paymentDate == null
+        <Text style={styles.descText}>{debit.descricao}</Text>
+        {debit.dataPagamento == null
         ? <PayButton onPress={onClickButton}/> 
         : <Image
             source={require('../../../assets/icons/check.png')}
@@ -25,7 +25,7 @@ const DebitItem = ({item, onClickButton}) => {
       </View>
       <View style={styles.row}>
       <Text style={styles.priceIndicatorText}>Valor da dívida:</Text>
-      <Text style={styles.priceText}>RS {debit.price}</Text>
+      <Text style={styles.priceText}>RS {debit.valor}</Text>
       </View>
     </TouchableOpacity>
   )

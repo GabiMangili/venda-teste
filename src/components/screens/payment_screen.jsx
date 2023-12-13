@@ -12,6 +12,9 @@ import SureModal from '../organisms/modals/sure_modal';
 import CancelButton from '../atoms/cancel_button';
 import SaveConfirmButton from '../atoms/save_confirm_button';
 import InfoModal from '../organisms/modals/info_modal';
+import { transformDateBR } from '../../utils';
+import dayjs from 'dayjs';
+import DebitController from '../../controllers/debit_controller';
 
 const PaymentScreen = ({route}) => {
   const navigation = useNavigation()
@@ -32,6 +35,8 @@ const PaymentScreen = ({route}) => {
   const [isVisibleDebtLimitModal, setVisibleDebtLimitModal] = useState(false); 
   const [isButtonPlusClicked, setButtonPlusClicked] = useState(false); 
 
+  const [debits, setListClientDebits] = useState([])
+
   const showSureModal = () => {
     setVisibleSureModal(true);
   };
@@ -48,44 +53,23 @@ const PaymentScreen = ({route}) => {
     setDeleteSuccessModalVisible(false);
   };
 
+  getDebitClients = async () => {
+    const debitController = new DebitController()
+    const debitsClientAllData = await debitController.getDebitsByClientId(client.id)
+    const debitsClientOnlyDebit = debitsClientAllData.map((debitWithClient) => {
+      return {
+        id: debitWithClient.id,
+        criadoEm: debitWithClient.criadoEm,
+        dataPagamento: debitWithClient.dataPagamento,
+        descricao: debitWithClient.descricao,
+        ultimaAlteracao: debitWithClient.ultimaAlteracao,
+        valor: debitWithClient.valor
+      }
+    })
+    console.log('---------------------------- debits ' + client.nome)
 
-
-  const debits = [
-    {
-      id: 1,
-      description: 'divida 1',
-      price: 1200,
-      paymentDate: '15-11-2023',
-      creationDate: '14-11-2023'
-    },
-    {
-      id: 2,
-      description: 'divida 2',
-      price: '12.000',
-      paymentDate: '15-11-2023',
-      creationDate: '14-11-2023'
-    },
-    {
-      id: 3,
-      description: 'divida 3',
-      price: 12.000,
-      paymentDate: '15-11-2023',
-      creationDate: '14-11-2023'
-    },
-    {
-      id: 4,
-      description: 'divida 4',
-      price: 12.000,
-      paymentDate: null,
-      creationDate: '14-11-2023'
-    },
-    {
-      id: 5,
-      description: 'divida 5',
-      price: 12.000,
-      paymentDate: '15-11-2023'
-    },
-  ]
+    setListClientDebits(debitsClientOnlyDebit)
+  }
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -114,10 +98,15 @@ const PaymentScreen = ({route}) => {
   }
   }, [haveDebitOpen, isButtonPlusClicked])
 
+
+  useEffect(() => {
+    getDebitClients()
+  }, [])
+
   const onPressPlusButton = () => {
     setButtonPlusClicked(true)
 
-    const filteredDebits = debits.filter(debit => debit.paymentDate == null);
+    const filteredDebits = debits.filter(debit => debit.dataPagamento == null);
     console.log(filteredDebits.length)
 
     if(filteredDebits.length > 0){
@@ -155,9 +144,9 @@ const PaymentScreen = ({route}) => {
   );
 
   const debitsSorted = debits.sort((debitA, debitB) => {
-    if (debitA.paymentDate === null && debitB.paymentDate !== null) {
+    if (debitA.dataPagamento === null && debitB.dataPagamento !== null) {
       return -1;
-    } else if (debitA.paymentDate !== null && debitB.paymentDate === null) {
+    } else if (debitA.dataPagamento !== null && debitB.dataPagamento === null) {
       return 1;
     }
     return 0;
@@ -170,7 +159,7 @@ const PaymentScreen = ({route}) => {
         
         <View style={styles.singularDataContainer}>
           <Text style={styles.label}>Nome</Text>
-          <Text style={styles.dataText}>{client.name}</Text>
+          <Text style={styles.dataText}>{client.nome}</Text>
         </View>
         
         <View style={styles.row}>
@@ -180,7 +169,9 @@ const PaymentScreen = ({route}) => {
           </View>
           <View>
             <Text style={styles.label}>Nascimento</Text>
-            <Text style={styles.dataText}>{(client.birthDate).replaceAll("-", "/")}</Text>
+            <Text style={styles.dataText}>
+              {dayjs(client.dataNascimento).format('DD/MM/YYYY')}
+            </Text>
           </View>
         </View>
 
