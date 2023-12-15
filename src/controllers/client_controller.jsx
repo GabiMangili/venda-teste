@@ -48,4 +48,36 @@ export default class ClientController {
             throw error;
           }
     }
+
+    async editClient(client) {
+        const endpoint = 'https://modeloproxyapi.interfocus.com.br:4443/api/Cliente'
+
+        console.log('client recebido PUT ↓↓')
+        console.log(client)
+
+        console.log('tentando fazer put do cliente')
+
+        try{
+            const response = await axios.put(
+                    endpoint,
+                    {
+                        "nome": client.nome,
+                        "email": client.email,
+                        "cpf": client.cpf,
+                        "dataNascimento": client.dataNascimento,
+                        "id": client.id
+                    }
+                )
+            
+                if (response.status >= 200 && response.status < 300) {
+                    console.log('Requisição bem-sucedida');
+                    console.log('Resposta da API (editar cliente):', response.data);
+                  } else {
+                    console.error('Erro na requisição (editar cliente):', response.status);
+                  }
+        } catch (error) {
+            console.error('Erro ao registrar cliente:', error);
+            throw error;
+          }
+    }
 } 

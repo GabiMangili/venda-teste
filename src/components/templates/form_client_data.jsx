@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, TextInput, Dimensions, } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { TextInputMask } from 'react-native-masked-text'
 import FormLabelMandatory from '../molecules/form_label_mandatory'
+import { transformDateBR } from '../../utils'
 
 const FormClientData = ({onFormChange, client, errorFormData}) => {
   var isEdit = client != null
@@ -9,10 +10,10 @@ const FormClientData = ({onFormChange, client, errorFormData}) => {
   const [cpf, setCpf] = useState(isEdit ? client.cpf : '');
   const [errorCpf, setErrorCpf] = useState('');
 
-  const [birthDate, setBirthDate] = useState(isEdit ? client.birthDate : '');
-  const [errorBirthDate, setErrorBirthDate] = useState('');
+  const [birthDate, setBirthDate] = useState(isEdit ? transformDateBR(client.dataNascimento.substring(0, 10)) : '');
+  const [errorBirthDate, setErrorBirthDate] = useState('')
 
-  const [name, setName] = useState(isEdit ? client.name : '');
+  const [name, setName] = useState(isEdit ? client.nome : '');
   const [errorName, setErrorName] = useState('');
 
   const [email, setEmail] = useState(isEdit ? client.email : '');

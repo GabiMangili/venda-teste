@@ -16,9 +16,12 @@ export function transformDate(inputDate) {
   }
 
   export function removeSpaces(text) {
-    var textWithouSpaces = text.replaceAll(" ", '')
 
-    return textWithouSpaces;
+    if(text){
+      var textWithouSpaces = text.replaceAll(" ", '')
+      return textWithouSpaces;
+    }
+    return ''
   }
 
   export function transformDateBR(date){//yyyy-mm-dd para dd-mm-yyyy

@@ -14,26 +14,32 @@ const EditClientScreen = ({route}) => {
     console.log(route.params)
     var client = route.params;
 
+    console.log('client nome: ' + client.nome)
+    console.log('client cpf: ' + client.cpf)
+    console.log('client email: ' + client.email)
+    console.log('client dataNascimento: ' + client.dataNascimento)
+
+
     const navigation = useNavigation();
 
     const [cpf, setCpf] = useState(client.cpf);
     const [errorCpf, setErrorCpf] = useState('');
 
-    const [birthDate, setBirthDate] = useState(client.birthDate);
+    const [birthDate, setBirthDate] = useState(transformDate(client.dataNascimento.substring(0, 10)));
     const [errorBirthDate, setErrorBirthDate] = useState('');
 
-    const [name, setName] = useState(client.name);
+    const [name, setName] = useState(client.nome);
     const [errorName, setErrorName] = useState('');
 
     const [email, setEmail] = useState(client.email);
     const [errorEmail, setErrorEmail] = useState('');
 
-    const [haveEmptyInput, setHaveEmptyInput] = useState(true)
+    const [haveEmptyInput, setHaveEmptyInput] = useState(!client)
   
     var errorFormMessages = {
       name: errorName,
       cpf: errorCpf,
-      birthDate: birthDate,
+      birthDate: errorBirthDate,
       email: errorEmail
     }
     
@@ -55,6 +61,10 @@ const EditClientScreen = ({route}) => {
         console.log(errorEmail);
         console.log(errorCpf);
         console.log(errorBirthDate);
+
+        console.log("nome e birthdate");
+        console.log(name)
+        console.log(birthDate)
       
         setHaveEmptyInput(!removeSpaces(name) || !removeSpaces(email) || !cpf || !birthDate);
         
