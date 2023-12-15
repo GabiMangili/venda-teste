@@ -8,7 +8,6 @@ const ClientCardItem = ({item, refreshLists}) => {
     const navigation = useNavigation()
     
     var client = item; 
-    console.log(client)
 
   return ( 
     <TouchableOpacity onPress={() => navigation.navigate('PaymentScreen', {client: client, refreshLists: refreshLists})} activeOpacity={0.85}>

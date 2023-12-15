@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import ClientCardItem from '../organisms/client_card_item';
 import FloatingButton from '../atoms/floating_button';
-import clientController from '../../controllers/client_controller';
+import ClientController from '../../controllers/client_controller';
 import DebitController from '../../controllers/debit_controller';
 
   const ClientsScreen = () => {
@@ -16,10 +16,8 @@ import DebitController from '../../controllers/debit_controller';
 
     const getClients = async () => {
       try {
-        const clientControllerInstance = new clientController();
+        const clientControllerInstance = new ClientController();
         const clienteData = await clientControllerInstance.getAllClients();
-        console.log('clientes')
-        //console.log(clienteData)
 
         setClients(clienteData);
       } catch (error){
@@ -32,14 +30,10 @@ import DebitController from '../../controllers/debit_controller';
         const debitController = new DebitController()
         const debitsOpenData = await debitController.getDebitsOpen()
         setDebitsOpen(debitsOpenData) 
-        console.log('------------debitsOpenData===============')
-        //console.log(debitsOpenData)
       } catch (error) {
         console.error( 'Erro ao buscar dívidas em aberto') 
       }
     }
-
-    
     
     useEffect(() => {
       getClients();
@@ -47,7 +41,7 @@ import DebitController from '../../controllers/debit_controller';
     }, []); 
 
     function refreshListClientsAndDebitsOpen(){
-      console.log('*refreshing lists*')
+      console.log('*refreshing lists*') 
       getClients();
       getDebitsOpen();
     };
@@ -88,10 +82,6 @@ import DebitController from '../../controllers/debit_controller';
         });
     
         setClientWithDebits(sortClientByDebit);
-        //console.log("FOR lista com debits");
-       /*  sortClientByDebit.forEach((element) => {
-          return console.log(element);
-        }); */
       }
     }, [clients, debitsOpen]); 
     
@@ -129,7 +119,7 @@ import DebitController from '../../controllers/debit_controller';
         data={clientWithDebits}
         renderItem={renderItem}
       />
-      <FloatingButton spaceBottom={100} onPress={() => navigation.navigate("RegisterClient")}/>
+      <FloatingButton spaceBottom={100} onPress={() => navigation.navigate("RegisterClient", {refreshClientList: refreshListClientsAndDebitsOpen})}/>
 
     </View>
   )

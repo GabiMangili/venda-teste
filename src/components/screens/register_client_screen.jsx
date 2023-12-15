@@ -9,8 +9,14 @@ import FloatingButton from '../atoms/floating_button'
 import CancelButton from '../atoms/cancel_button'
 import SaveConfirmButton from '../atoms/save_confirm_button'
 import FormClientData from '../templates/form_client_data';
+import InfoModal from '../organisms/modals/info_modal';
+import SuccessModal from '../organisms/modals/success_modal';
+import ClientController from '../../controllers/client_controller';
 
-export default function RegisterClientScreen () {
+export default function RegisterClientScreen ({route}) {
+
+  const { refreshClientList } = route.params
+
   const navigation = useNavigation();
 
   const [cpf, setCpf] = useState('');
@@ -25,7 +31,14 @@ export default function RegisterClientScreen () {
   const [email, setEmail] = useState('');
   const [errorEmail, setErrorEmail] = useState('');
 
+  const [client, setClient] = useState(null)
+
   const [haveEmptyInput, setHaveEmptyInput] = useState(true)
+
+  const [isErrorRegisterModalVisible, setErrorRegisterModalVisible] = useState(false)
+  const [isRegisterSuccessModalVisible, setRegisterSuccessModalVisible] = useState(false)
+
+  const clientController = new ClientController()
   
   var errorFormMessages = {
     name: errorName,
@@ -47,6 +60,8 @@ export default function RegisterClientScreen () {
   };
 
   useEffect(() => {
+    console.log(birthDate);
+
     console.log("useEffect register");
     console.log(errorName);
     console.log(errorEmail);
@@ -54,16 +69,22 @@ export default function RegisterClientScreen () {
     console.log(errorBirthDate);
   
     setHaveEmptyInput(!removeSpaces(name) || !removeSpaces(email) || !cpf || !birthDate);
-    
-    setErrorFormMessagesData({
-      errorName: errorName,
-      errorCpf: errorCpf,
-      errorBirthDate: errorBirthDate,
-      errorEmail: errorEmail,
-    });
   
   }, [errorName, errorEmail, errorCpf, errorBirthDate, name, email, cpf, birthDate]);
-  
+
+  useEffect(() => {
+    //NAO FUNCIONOU -> TENTANDO FAZER A VALIDACAO DAR CERTO E NAO ENTRAR NO IF PARA FAZER O REGISTRO
+    if((errorName || errorEmail || errorCpf || errorBirthDate)){
+      console.log('passando pelo usefecto')
+      setErrorFormMessagesData({
+        errorName: errorName,
+        errorCpf: errorCpf,
+        errorBirthDate: errorBirthDate,
+        errorEmail: errorEmail,
+      });
+    }
+  }, [errorName, errorEmail, errorCpf, errorBirthDate])
+
 
   const validateForm = () => {
     setErrorName(validateRequired(removeSpaces(name)))
@@ -75,8 +96,41 @@ export default function RegisterClientScreen () {
   const onPressSaveButton = () => {
     if(!haveEmptyInput){
       validateForm()
+
+      if((!errorName && !errorEmail && !errorCpf && !errorBirthDate)){
+        const dateParts = birthDate.split('/');
+        const formattedBirthDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
+        console.log('formated ISO date: ' + formattedBirthDate.toISOString())
+  
+        setClient({
+            "nome": name,
+            "email": email,
+            "cpf": cpf.replaceAll('.', '').replaceAll('-', ''),
+            "dataNascimento": formattedBirthDate.toISOString()
+          })
+      }
     }
   }
+
+  async function registerClient(clientToPost){
+    try{
+      const clientPostResponse = await clientController.registerClient(clientToPost)
+      setRegisterSuccessModalVisible(true)
+      refreshClientList()
+    } catch (error) {
+      setErrorRegisterModalVisible(true)
+    }
+  }
+
+  function hideModalErrorRegister(){
+    setErrorRegisterModalVisible(false)
+  }
+
+  useEffect(() => {
+    if(client != null){
+      registerClient(client)
+    }
+  }, [client])
   
   return (
     <View style={styles.screen}>
@@ -91,7 +145,21 @@ export default function RegisterClientScreen () {
           <SaveConfirmButton isAble={!haveEmptyInput} onPress={onPressSaveButton}/>
         </View>
       </View>
-      <FloatingButton spaceBottom={80} onPress={() => navigation.navigate("NewDebitScreen") }/>
+      <FloatingButton spaceBottom={80} on Press={() => navigation.navigate("NewDebitScreen") }/>
+
+      {isErrorRegisterModalVisible && (
+        <InfoModal text='Ocorreu um erro ao tentar registrar cliente. Tente novamente mais tarde' onClose={hideModalErrorRegister}/>
+      )}
+
+      {isRegisterSuccessModalVisible && (
+        <SuccessModal
+          text="Registrado com sucesso! "
+          onClose={() => {
+            setRegisterSuccessModalVisible(false)
+            navigation.goBack()
+          }}
+        />
+      )}
     </View>
   )
 }

@@ -40,7 +40,7 @@ const FormClientData = ({onFormChange, client, errorFormData}) => {
     getErrors()
   }, [name, email, cpf, birthDate])
 
-  console.log("errorformdata-------------------")
+  console.log("\nerrorformdata ↓↓")
   console.log(errorFormData)
 
   return (

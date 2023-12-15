@@ -11,7 +11,6 @@ export function transformDate(inputDate) {
     }
     const parts = inputDate.split('/');
     const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-    console.log(transformedDate)
 
     return transformedDate.toString();
   }
@@ -42,10 +41,6 @@ export const validateInputDate = (dateString) => {
     }
 
     const date = parseISO(dateString);
-    console.log('Date: ')
-    console.log(date)
-    console.log(validator.isDate(date))
-    console.log(date > new Date())
     if (!validator.isDate(date) || date > new Date() || dateString.length != 10) {
         return 'Data inválida';
     }

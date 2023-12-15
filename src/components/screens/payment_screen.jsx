@@ -22,7 +22,7 @@ const PaymentScreen = ({route}) => {
   const { client } = route.params || {};
   const { refreshLists } = route.params
 
-  console.log('client:') 
+  console.log('client PaymentScreen: ') 
   console.log(client)
 
   const handleDeleteClient = () => {
@@ -74,10 +74,11 @@ const PaymentScreen = ({route}) => {
         valor: debitWithClient.valor
       }
     })
-    console.log('---------------------------- debits ' + client.nome)
 
     setListClientDebits(debitsClientOnlyDebit)
     setDebitOpen(debitsClientOnlyDebit.find((debit) => !debit.dataPagamento))
+    console.log('debits ↓')
+    console.log(debits)
   }
 
   useLayoutEffect(() => {
@@ -99,7 +100,7 @@ const PaymentScreen = ({route}) => {
   useEffect(() => {
     if(isButtonPlusClicked){
       if(!haveDebitOpen){
-        navigation.navigate('NewDebitScreen', {})
+        navigation.navigate('NewDebitScreen', {client: client, refreshClientDebits: refreshClientDebits})
       } else {
         setVisibleDebtLimitModal(true)
       }
@@ -112,11 +113,14 @@ const PaymentScreen = ({route}) => {
     getDebitClients()
   }, [])
 
+  function refreshClientDebits(){
+    getDebitClients()
+  }
+
   const onPressPlusButton = () => {
     setButtonPlusClicked(true)
 
     const filteredDebits = debits.filter(debit => debit.dataPagamento == null);
-    console.log(filteredDebits.length)
 
     if(filteredDebits.length > 0){
       setHaveDebitOpen(true);
@@ -124,11 +128,9 @@ const PaymentScreen = ({route}) => {
       setHaveDebitOpen(false)
     }
 
-    console.log("haveDebitOpen: " +  haveDebitOpen)
   }
 
   const hideModalDebitOpen = () => {
-    console.log('setando setVisivleDebitLimitmModal -> false')
     setVisibleDebtLimitModal(false)
   }
 
@@ -141,7 +143,6 @@ const PaymentScreen = ({route}) => {
   onOpen = (event) => {
     event.persist();
     if (modalizeRef.current) {
-      console.log('opened');
       modalizeRef.current.open();
     } else {
       console.error('Modalize is not initialized or mounted.');
@@ -151,7 +152,7 @@ const PaymentScreen = ({route}) => {
   async function payDebit()  {
     try{
       const response = await debitController.payDebit(debitOpen.id)
-      console.log(payDebit)
+      console.log("payDebit: " + payDebit)
       refreshLists()
       setPaySuccessModalVisible(true)
       setPayedDebitOpen(true)
@@ -208,13 +209,12 @@ const PaymentScreen = ({route}) => {
           </View>
           <EditButton onPress={() => navigation.navigate('EditClientScreen', client)}/>
         </View>
-        
       </View>
       
       <View style={styles.debitContainer}>
         <View style={styles.rowTitle}>
           <Text style={styles.title}>Dívidas</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('ShowAllDebitsScreen', {debits})}>
+          <TouchableOpacity onPress={() => navigation.navigate('ShowAllDebitsScreen', {debits: debits, debitOpen: debitOpen, isPayedDebitOpen: isPayedDebitOpen})}>
             <Text style={styles.titleUnderline}>Ver todas</Text>
           </TouchableOpacity>
         </View>
@@ -266,19 +266,12 @@ const PaymentScreen = ({route}) => {
         />
       )}
 
-      {isVisibleDeleteSuccessModal && (
-        <SuccessModal
-          text="Excluído com sucesso!"
-          onClose={() => navigation.goBack()}
-        />
-      )}
-
       {isVisibleDebtLimitModal && (
-        <InfoModal text='Um cliente não pode ter mais de uma dívida em aberto' onClose={hideModalDebitOpen}/>
+        <InfoModal text='Um cliente não pode ter mais que uma dívida em aberto' onClose={hideModalDebitOpen}/>
       )}
 
       {isErrorPayModalVisible && (
-        <InfoModal text='Ococrreu um erro ao entar pagar. Tente novamente mais tarde' onClose={hideModalPayError}/>
+        <InfoModal text='Ococrreu um erro ao tentar pagar dívida. Tente novamente mais tarde' onClose={hideModalPayError}/>
       )}
 
       {isVisiblePaySuccessModal && (
