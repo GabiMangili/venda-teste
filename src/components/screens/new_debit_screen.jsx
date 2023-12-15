@@ -9,14 +9,18 @@ import CancelButton from '../atoms/cancel_button'
 import SaveConfirmButton from '../atoms/save_confirm_button'
 import FormLabelMandatory from '../molecules/form_label_mandatory';
 import { removeSpaces, transformDateBR, transformDate, validateInputDate, validateRequired } from '../../utils';
+import DebitController from '../../controllers/debit_controller';
+import InfoModal from '../organisms/modals/info_modal';
+import SuccessModal from '../organisms/modals/success_modal';
 
 export default function NewDebitScreen ({route}) {
 
   var debit = route.params.debit ?? null
+  const { client } = route.params || {};
+  const { refreshClientDebits } = route.params || {}
 
   var isEdit = !debit ? false : true
-  console.log('debito ')
-  console.log({debit})
+  console.log('debit newDebitScreen: ' + debit)
 
   const navigation = useNavigation();
   const today = new Date()
@@ -26,7 +30,7 @@ export default function NewDebitScreen ({route}) {
   const [debitName, setDebitName] = useState(isEdit ? debit.descricao : '');
   const [errorDebitName, setErrorDebitName] = useState('');
 
-  const [payedDate, setPayedDate] = useState(isEdit ? transformDateBR(debit.dataPagamento) : '');
+  const [payedDate, setPayedDate] = useState(isEdit && debit.dataPagamento ? transformDateBR(debit.dataPagamento) : '');
   const [errorPayedDate, setErrorPayedDate] = useState('');
 
   const [creationDate, setCreationDate] = useState(isEdit ? transformDateBR(debit.criadoEm) : createDateToday);
@@ -37,11 +41,14 @@ export default function NewDebitScreen ({route}) {
 
   const [haveEmptyInput, setHaveEmptyInput] = useState(true)
 
+  const [saveButtonPressed, setSaveButtonPressed] = useState(false)
+
   const [isPayed, setIsPayed] = useState(!payedDate ? false : true)
 
+  const [isVisibleErrorDebitModal, setVisibleErrorDebitModal] = useState(false);
+  const [isVisibleDebitSuccessModal, setVisibleDebitSuccessModal] = useState(false);
+
   useEffect(() => {
-    console.log("isPayed------------------------------")
-    console.log(isPayed)
     console.log(errorDebitName)
     console.log(errorCreationDate)
     console.log(errorPrice),
@@ -57,6 +64,51 @@ export default function NewDebitScreen ({route}) {
     if(isPayed){
       setErrorPayedDate(validateInputDate(transformDate(payedDate)))
     }
+    setSaveButtonPressed(true)
+  }
+
+  const payedDateValidation = () => {
+    console.log(errorPayedDate)
+    if((isPayed && !errorPayedDate) || !isPayed){
+      return true
+    }
+    return false
+  }
+
+  useEffect(() => {
+    if((!errorDebitName && !errorCreationDate && !errorPrice && payedDateValidation) && !errorPayedDate && saveButtonPressed){
+      createDebit()
+      setSaveButtonPressed(false)
+    }
+  }, [errorDebitName, errorCreationDate, errorPrice, errorPayedDate, saveButtonPressed])
+
+  async function createDebit(){
+    let formattedPayedDate;
+
+    if(isPayed){
+      const dateParts = payedDate.split('/');
+      formattedPayedDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
+    }
+
+    try{
+      const debit = {
+      "valor": parseFloat(price.replaceAll('R$', '').replaceAll('.', '').replaceAll(',', '.')),
+      "dataPagamento": isPayed ? formattedPayedDate.toISOString() : null,
+      "descricao": debitName,
+      "clienteId": client.id
+      }
+      const debitController = new DebitController()
+      const response = await debitController.createDebit(debit)
+      setVisibleDebitSuccessModal(true)
+    } catch (error) {
+      setVisibleErrorDebitModal(true)
+      console.log('Erro ao criar débito -> newDebitScreen')
+      console.log(error)
+    }
+  }
+
+  const hideModalCreateDebitError = () => {
+    setVisibleErrorDebitModal(false)
   }
 
   onPressSaveButton = () => {
@@ -112,7 +164,13 @@ export default function NewDebitScreen ({route}) {
         
       </View>
 
-        <TouchableOpacity style={styles.row} onPress={()=>setIsPayed(!isPayed)}>
+        <TouchableOpacity style={styles.row} onPress={()=>{
+            if(isPayed){
+              setErrorPayedDate('')
+            }
+            setIsPayed(!isPayed)
+            console.log('errorpayedDate: ' + errorPayedDate)
+          }}>
         { !isPayed 
           ? <Image
             source={require('../../../assets/icons/box_uncheck.png')}
@@ -142,6 +200,22 @@ export default function NewDebitScreen ({route}) {
           </View>
         : null
       }
+
+      {isVisibleErrorDebitModal && (
+        <InfoModal text='Algo deu errado ao tentar criar dívida. Tente novamente mais tarde.' onClose={() => {
+          navigation.goBack()
+        }}/>
+      )}
+
+      {isVisibleDebitSuccessModal && (
+        <SuccessModal
+          text="Dívida criada com sucesso!"
+          onClose={() => {
+            refreshClientDebits()
+            navigation.goBack()
+          }}
+        />
+      )}
 
       <View style={styles.debitContainer}>
         <View style={styles.rowButtons}>

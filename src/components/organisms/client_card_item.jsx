@@ -3,21 +3,21 @@ import React from 'react'
 import { useNavigation } from '@react-navigation/native';
 
 import Divider from '../atoms/divider'
+import { formatCPF } from '../../utils';
 
-const ClientCardItem = ({item}) => {
+const ClientCardItem = ({item, refreshLists}) => {
     const navigation = useNavigation()
     
     var client = item; 
-    console.log(client)
 
   return ( 
-    <TouchableOpacity onPress={() => navigation.navigate('PaymentScreen', {client: client})} activeOpacity={0.85}>
+    <TouchableOpacity onPress={() => navigation.navigate('PaymentScreen', {client: client, refreshLists: refreshLists})} activeOpacity={0.85}>
     <View style={[styles.container]}>
 
         <Text style={styles.name}>{client.nome}</Text>  
         <View style={styles.row}>
             <Text style={styles.indication}>CPF: </Text>
-            <Text style={styles.dataClient}>{client.cpf}</Text>
+            <Text style={styles.dataClient}>{formatCPF(client.cpf)}</Text>
         </View>
         <View style={styles.row}>
             <Text style={styles.indication}>E-mail: </Text>

@@ -11,7 +11,6 @@ export function transformDate(inputDate) {
     }
     const parts = inputDate.split('/');
     const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-    console.log(transformedDate)
 
     return transformedDate.toString();
   }
@@ -25,6 +24,11 @@ export function transformDate(inputDate) {
   export function transformDateBR(date){//yyyy-mm-dd para dd-mm-yyyy
     return date.substring(0, 10).split("-").reverse().join("-")
   }
+
+  export function formatCPF(cpf){
+    const formattedCPF = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    return formattedCPF;
+  };
 
   //VALIDATES
 
@@ -42,10 +46,6 @@ export const validateInputDate = (dateString) => {
     }
 
     const date = parseISO(dateString);
-    console.log('Date: ')
-    console.log(date)
-    console.log(validator.isDate(date))
-    console.log(date > new Date())
     if (!validator.isDate(date) || date > new Date() || dateString.length != 10) {
         return 'Data inválida';
     }
