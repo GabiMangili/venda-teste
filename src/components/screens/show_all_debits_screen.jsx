@@ -41,7 +41,7 @@ const ShowAllDebitsScreen = ({route}) => {
     const renderItem = ({ item, index }) => (
       <View>
         <View style={{height: index == 0 ? 30 : 0}}/>
-          <DebitItem item={item} onClickButton={onOpen} isPayed={isPayedDebitOpen} isDebitOpen={!debitOpen ? false : item.id === debitOpen.id}/>
+          <DebitItem item={item} isPayed={isPayedDebitOpen} isDebitOpen={!debitOpen ? false : item.id === debitOpen.id} isOnlyToShow={true}/>
         <View style={{height: index == debits.length - 1 ? 20 : 0}}/>
       </View>
     );

@@ -37,6 +37,7 @@ export default function RegisterClientScreen ({route}) {
 
   const [isErrorRegisterModalVisible, setErrorRegisterModalVisible] = useState(false)
   const [isRegisterSuccessModalVisible, setRegisterSuccessModalVisible] = useState(false)
+  const [saveButtonPressed, setSaveButtonPressed] = useState(false)
 
   const clientController = new ClientController()
   
@@ -73,16 +74,33 @@ export default function RegisterClientScreen ({route}) {
   }, [errorName, errorEmail, errorCpf, errorBirthDate, name, email, cpf, birthDate]);
 
   useEffect(() => {
-    //NAO FUNCIONOU -> TENTANDO FAZER A VALIDACAO DAR CERTO E NAO ENTRAR NO IF PARA FAZER O REGISTRO
     if((errorName || errorEmail || errorCpf || errorBirthDate)){
-      console.log('passando pelo usefecto')
       setErrorFormMessagesData({
         errorName: errorName,
         errorCpf: errorCpf,
         errorBirthDate: errorBirthDate,
         errorEmail: errorEmail,
       });
+    } else {
+      console.log('useefect do setclient')
+      var haveNotErrors = !errorName && !errorEmail && !errorCpf && !errorBirthDate
+      console.log('haveNotErrors: ' + haveNotErrors)
+      if(saveButtonPressed && haveNotErrors){
+  
+        const dateParts = birthDate.split('/');
+          const formattedBirthDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
+          console.log('formated ISO date: ' + formattedBirthDate.toISOString())
+    
+          setClient({
+              "nome": name,
+              "email": email,
+              "cpf": cpf.replaceAll('.', '').replaceAll('-', ''),
+              "dataNascimento": formattedBirthDate.toISOString()
+            })
+      }
     }
+    console.log('saveButtonPressed -> false')
+    setSaveButtonPressed(false)
   }, [errorName, errorEmail, errorCpf, errorBirthDate])
 
 
@@ -95,20 +113,9 @@ export default function RegisterClientScreen ({route}) {
 
   const onPressSaveButton = () => {
     if(!haveEmptyInput){
+      setSaveButtonPressed(true)
+      console.log('burronPressed -> true')
       validateForm()
-
-      if((!errorName && !errorEmail && !errorCpf && !errorBirthDate)){
-        const dateParts = birthDate.split('/');
-        const formattedBirthDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
-        console.log('formated ISO date: ' + formattedBirthDate.toISOString())
-  
-        setClient({
-            "nome": name,
-            "email": email,
-            "cpf": cpf.replaceAll('.', '').replaceAll('-', ''),
-            "dataNascimento": formattedBirthDate.toISOString()
-          })
-      }
     }
   }
 
@@ -128,6 +135,7 @@ export default function RegisterClientScreen ({route}) {
 
   useEffect(() => {
     if(client != null){
+      console.log('tentando registrar cliente')
       registerClient(client)
     }
   }, [client])

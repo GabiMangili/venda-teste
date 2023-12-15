@@ -12,7 +12,7 @@ import SureModal from '../organisms/modals/sure_modal';
 import CancelButton from '../atoms/cancel_button';
 import SaveConfirmButton from '../atoms/save_confirm_button';
 import InfoModal from '../organisms/modals/info_modal';
-import { transformDateBR } from '../../utils';
+import { transformDateBR, formatCPF } from '../../utils';
 import dayjs from 'dayjs';
 import DebitController from '../../controllers/debit_controller';
 import { is } from 'date-fns/locale';
@@ -214,7 +214,15 @@ const PaymentScreen = ({route}) => {
       <View style={styles.debitContainer}>
         <View style={styles.rowTitle}>
           <Text style={styles.title}>Dívidas</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('ShowAllDebitsScreen', {debits: debits, debitOpen: debitOpen, isPayedDebitOpen: isPayedDebitOpen})}>
+          <TouchableOpacity onPress={() => navigation.navigate(
+            'ShowAllDebitsScreen',
+            {
+              debits: debits,
+              debitOpen: debitOpen,
+              isPayedDebitOpen: isPayedDebitOpen,
+              refreshLists: refreshLists
+            }
+          )}>
             <Text style={styles.titleUnderline}>Ver todas</Text>
           </TouchableOpacity>
         </View>
@@ -286,11 +294,6 @@ const PaymentScreen = ({route}) => {
     </View>
   )
 }
-
-const formatCPF = (cpf) => {
-  const formattedCPF = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-  return formattedCPF;
-};
 
 export default PaymentScreen
 

@@ -29,16 +29,19 @@ const FormClientData = ({onFormChange, client, errorFormData}) => {
   };
 
   const getErrors = () => {
-    setErrorName(errorFormData.errorName)
-    setErrorCpf(errorFormData.errorCpf)
-    setErrorBirthDate(errorFormData.errorBirthDate)
-    setErrorEmail(errorFormData.errorEmail)
+    setErrorName(errorFormData.errorName);
+    setErrorCpf(errorFormData.errorCpf);
+    setErrorBirthDate(errorFormData.errorBirthDate);
+    setErrorEmail(errorFormData.errorEmail);
   }
 
   useEffect(() => {
     handleFormChange()
-    getErrors()
   }, [name, email, cpf, birthDate])
+
+  useEffect(() => {
+    getErrors()
+  }, [errorFormData]);
 
   console.log("\nerrorformdata ↓↓")
   console.log(errorFormData)
